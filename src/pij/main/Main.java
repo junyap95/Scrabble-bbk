@@ -1,7 +1,4 @@
 package pij.main;
-
-import java.io.*;
-import java.util.Scanner;
 import GameBoard.GameBoard;
 import FileReader.*;
 

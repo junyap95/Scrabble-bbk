@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -22,8 +21,8 @@ public class FileProcessor {
         System.out.println("============" + "                     " + "============");
     }
 
-    Scanner scan = new Scanner(System.in);
-    String userChoice;
+//    Scanner scan = new Scanner(System.in);
+//    String userChoice;
 
     /**
      * Prompts the user to choose between loading a custom board or using the default board.
