@@ -6,8 +6,8 @@ class TileRowTest {
 
     @org.junit.jupiter.api.Test
     void setTileRow() {
-        TileRow tileRow = new TileRow();
-        tileRow.setTileRow(new TileBag());
+        TileRack tileRow = new TileRack();
+        tileRow.refillUserRack(new TileBag());
         assertEquals(tileRow.getUserRow().size(),  tileRow.TILE_RACK_CAPACITY);
     }
 

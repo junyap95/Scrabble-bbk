@@ -4,7 +4,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class TileBag {
-     public Map<String, Integer> tileMap;
+
+    public Map<String, Integer> tileMap;
 
     public TileBag(){
         tileMap = new LinkedHashMap<>();
@@ -36,4 +37,9 @@ public class TileBag {
         this.tileMap.put("Z11",1);
         this.tileMap.put("_5",2);
     }
+
+    public Map<String, Integer> getTileMap() {
+        return tileMap;
+    }
+
 }

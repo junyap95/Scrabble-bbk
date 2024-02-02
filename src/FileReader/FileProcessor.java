@@ -8,24 +8,17 @@ import java.util.List;
 import Square.*;
 
 public class FileProcessor {
-    private File boardLoaded;
-
-    public void bannerPrinter() {
-        System.out.println("============" + "                     " + "============");
-        System.out.println("============" + "  S k r a B B k l e  " + "============");
-        System.out.println("============" + "                     " + "============");
-    }
 
     /**
      * Prompts the user to choose between loading a custom board or using the default board.
      * It repeats the prompt until a valid choice ('l' or 'd') is entered.
      */
 
-    private String tileDisplay(String line, int index){
+    private static String tileDisplay(String line, int index){
         return String.valueOf(line.charAt(index)) + line.charAt(index + 1) + line.charAt(index + 2);
     }
 
-    private int tileScore(String line, int index) {
+    private static int tileScore(String line, int index) {
         String subStr = Character.isDigit(line.charAt(index+2)) ?
                 line.substring(index+1,index+3) :
                 line.substring(index+1,index+2);
@@ -33,7 +26,7 @@ public class FileProcessor {
         return Integer.parseInt(subStr);
     }
 
-    public void fileProcessor(GameBoard gameBoard, String fileName) {
+    public static void fileProcessor(GameBoard gameBoard, String fileName) {
         try (BufferedReader reader = new BufferedReader(new FileReader("resources/" + fileName))) {
             int boardSize = Integer.parseInt(reader.readLine());
             if(boardSize <= 11 || boardSize >= 26) {
@@ -67,9 +60,6 @@ public class FileProcessor {
                 k++;
             }
             gameBoard.setTileSpace(tileSpace);
-
-
-
 
         } catch (FileNotFoundException ex) {
             System.out.println("File " + gameBoard + " not found!");
