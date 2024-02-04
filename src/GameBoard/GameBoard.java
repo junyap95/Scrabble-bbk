@@ -1,38 +1,46 @@
 package GameBoard;
 
-
 import Square.Square;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class GameBoard {
-    private List<List<Square>> allTiles;
+    private List<List<Square>> allSquaresOnBoard; // 2D arrayList to store all squares on the game board
     private int gameBoardSize;
 
+    // constructor, initialises a list that stores list of squares
     public GameBoard() {
-        allTiles = new ArrayList<>();
+        allSquaresOnBoard = new ArrayList<>();
     }
 
     public int getGameBoardSize() {
         return this.gameBoardSize;
     }
 
-    public void setTileSpace(List<List<Square>> sortedTiles) {
-        this.allTiles = sortedTiles;
+    public List<List<Square>> getAllSquaresOnBoard() {
+        return this.allSquaresOnBoard;
     }
 
-    public List<List<Square>> getTileSpace() {
-        return this.allTiles;
+    public int getCentreSquareIndex() {
+        return this.gameBoardSize % 2 == 0 ? (this.gameBoardSize / 2) - 1 : this.gameBoardSize / 2;
     }
+
+    public void setAllSquaresOnBoard(List<List<Square>> sortedTiles) {
+        this.allSquaresOnBoard = sortedTiles;
+    }
+
+    public void setGameBoardSize(int gameBoardSize) {
+        this.gameBoardSize = gameBoardSize;
+    }
+
 
     public void printGameBoard() {
-        List<List<Square>> allTiles = this.getTileSpace();
+        List<List<Square>> allSquaresOnBoard = this.getAllSquaresOnBoard();
         int yAxis = 1;
 
         PrintingUtil.printAlphabetsRow(this.gameBoardSize);
 
-        for (List<Square> innerArray : allTiles) {
+        for (List<Square> innerArray : allSquaresOnBoard) {
             System.out.println();
             System.out.print(yAxis < 10 ? yAxis + " " : yAxis);
             for (Square square : innerArray) {
@@ -47,14 +55,4 @@ public class GameBoard {
         System.out.println();
 
     }
-
-    public void setGameBoardSize(int gameBoardSize) {
-        this.gameBoardSize = gameBoardSize;
-    }
-
-    public int getCentreIndex() {
-        return this.gameBoardSize % 2 == 0 ? (this.gameBoardSize / 2) - 1 : this.gameBoardSize / 2;
-    }
-
-
 }

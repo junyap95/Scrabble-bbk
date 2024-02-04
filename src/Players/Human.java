@@ -16,7 +16,7 @@ public class Human extends Player{
         }
 
         List<Tile> updatedRack = tileRack.getUserRow().stream()
-                .filter(t -> !tiles.contains(t.getDisplay().charAt(0)))
+                .filter(t -> !tiles.contains(t.getDisplayOnBoard().charAt(0)))
                 .toList();
 
         tileRack.setUserRow(updatedRack);

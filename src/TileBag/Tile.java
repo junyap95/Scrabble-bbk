@@ -2,20 +2,21 @@ package TileBag;
 
 public class Tile {
     private final int tileScore;
-    private final String display;
+    private final String displayOnBoard;
 
-    public String getDisplay() {
-        return this.display.toLowerCase();
+
+    public String getDisplayOnBoard() {
+        return this.displayOnBoard.toLowerCase();
     }
 
-    public Tile(String display, int tileScore){
-        this.display = display;
+    public Tile(String displayOnBoard, int tileScore){
+        this.displayOnBoard = displayOnBoard;
         this.tileScore = tileScore;
     }
 
     @Override
     public String toString() {
-        return "[" + this.display + "]";
+        return "[" + this.displayOnBoard + "]";
 
     }
 }

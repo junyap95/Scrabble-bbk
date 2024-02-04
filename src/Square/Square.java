@@ -5,12 +5,10 @@ import TileBag.Tile;
 public class Square {
 
     private SquareType squareType;
-
-
-
     private String display;
     private Integer squareScore;
     private Tile tilePlaced;
+    //is occupied?
 
     public Square(SquareType squareType, String display, int squareScore) {
         this.display = display;

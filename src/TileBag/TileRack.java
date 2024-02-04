@@ -23,9 +23,9 @@ public class TileRack {
         List<String> setList = new ArrayList<>(tileMap.keySet());
 
         Random rand = new Random();
-        for (int i = 0; i < TILE_RACK_CAPACITY; i++) {
+        for (int i = 0; i < TILE_RACK_CAPACITY - userRow.size(); i++) {
             int randomIndex = rand.nextInt(setList.size());
-            String tileString = setList.get(randomIndex);
+            String tileString = setList.get(randomIndex); // 0-25
 
             if (tileMap.containsKey(tileString)) {
                 this.userRow.add(new Tile(tileString, Integer.parseInt(tileString.substring(1))));
@@ -38,6 +38,10 @@ public class TileRack {
                 }
             }
         }
+    }
+
+    public boolean rackContainsMove(String s){
+        return false;
     }
 
     public void printUserRow() {
