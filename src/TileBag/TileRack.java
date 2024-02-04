@@ -40,8 +40,12 @@ public class TileRack {
         }
     }
 
-
     public void printUserRow() {
         System.out.println(this.userRow);
+    }
+
+    @Override
+    public String toString() {
+        return this.getUserRow().toString().substring(1, this.getUserRow().toString().length()-1);
     }
 }

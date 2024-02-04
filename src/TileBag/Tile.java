@@ -15,7 +15,7 @@ public class Tile {
 
     @Override
     public String toString() {
-        return "[" + this.display +" "+ this.tileScore + "]";
+        return "[" + this.display + "]";
 
     }
 }

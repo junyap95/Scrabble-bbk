@@ -7,11 +7,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GameBoard {
-    List<List<Square>> allTiles;
+    private List<List<Square>> allTiles;
     private int gameBoardSize;
 
     public GameBoard() {
         allTiles = new ArrayList<>();
+    }
+
+    public int getGameBoardSize() {
+        return this.gameBoardSize;
     }
 
     public void setTileSpace(List<List<Square>> sortedTiles) {
@@ -48,7 +52,7 @@ public class GameBoard {
         this.gameBoardSize = gameBoardSize;
     }
 
-    private int getCentreIndex() {
+    public int getCentreIndex() {
         return this.gameBoardSize % 2 == 0 ? (this.gameBoardSize / 2) - 1 : this.gameBoardSize / 2;
     }
 

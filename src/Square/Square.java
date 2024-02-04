@@ -5,6 +5,9 @@ import TileBag.Tile;
 public class Square {
 
     private SquareType squareType;
+
+
+
     private String display;
     private Integer squareScore;
     private Tile tilePlaced;
@@ -26,6 +29,10 @@ public class Square {
         this.tilePlaced = tile;
         return true;
 
+    }
+
+    public void setDisplay(String display) {
+        this.display = display;
     }
 
     @Override

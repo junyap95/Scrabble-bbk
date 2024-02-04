@@ -64,7 +64,8 @@ public class FileProcessor {
         } catch (FileNotFoundException ex) {
             System.out.println("File " + gameBoard + " not found!");
         } catch (IOException ex) {
-            ex.printStackTrace();
+            ex.
+                    printStackTrace();
         }
     }
 

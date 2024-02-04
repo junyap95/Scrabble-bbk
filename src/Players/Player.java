@@ -1,5 +1,7 @@
 package Players;
 
+import TileBag.TileRack;
+
 import java.util.Scanner;
 
 public abstract class Player {
@@ -10,5 +12,5 @@ public abstract class Player {
         this.scanner = new Scanner(System.in);
     }
 
-    abstract String play();
+//    abstract void play(String userMove, TileRack tileRack);
 }
