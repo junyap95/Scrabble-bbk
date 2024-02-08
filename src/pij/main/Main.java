@@ -1,74 +1,53 @@
 package pij.main;
 
-import GameBoard.GameBoard;
-import FileReader.*;
-import TileBag.*;
+import pij.main.GameBoard.GameBoard;
+import pij.main.GameRunner.GameCounters;
+import pij.main.GameRunner.GameRunner;
+import pij.main.Players.HumanPlayer;
+import pij.main.Players.Player;
+import pij.main.TileBag.*;
 
 
 public class Main {
 
     public static void main(String[] args) {
-        GameRunner gameRunner = new GameRunner();
-        GameBoard gb = new GameBoard();
-        gameRunner.bannerPrinter();
+        GameRunner gr = new GameRunner();
+        Player humanPlayer = gr.getHumanPlayer();
+        Player computerPlayer = gr.getComputerPlayer();
+        GameBoard gameBoard = gr.getGameItems().getGameBoard();
+        GameCounters gameCounters = gr.getGameCounters();
+        TileRack humansTileRack = gr.getGameItems().getHumansTileRack();
+        String PASS = ",";
 
-        TileBag tileBag = new TileBag();
-        TileRack humanRow = new TileRack();
-        TileRack computerRow = new TileRack();
-        //        System.out.println("Initialised userRack. Length: " + humanRow.getUserRow().size());
-        //        System.out.println("Initialised computerRack. Length: " + computerRow.getUserRow().size());
-        //        System.out.println("Initialised. Tilebag" + tileBag.getTileMap());
+        //        while(!gr.getGameCounters().isGameOver()){
+        // refill both players' racks
+        gr.tileRackRunner();
 
-        gameRunner.tileRackLauncher(computerRow, humanRow, gameRunner.openCloseGameOption(), tileBag);
-        //        System.out.println("Gigalaunched. userRack. Length: " + humanRow.getUserRow().size());
-        //        System.out.println("Gigalaunched. comRack. Length: " + computerRow.getUserRow().size());
-        //        System.out.println("Gigalaunched. Tilebag" + tileBag.getTileMap());
-        //        while(1+1==2){
+        // human player plays
+        String humansMove;
+        boolean isMoveLegal = false;
+        boolean isWordInRack=false;
+        boolean isSquareMoveInBound=false;
+        boolean isPass = false;
 
-        System.out.println("gb size "+gb.getGameBoardSize());
-        System.out.println("centreSquare " + gb.getAllSquares().get(gb.getCentreSquareIndex()).get(gb.getCentreSquareIndex()));
-        gameRunner.tileVerifier(humanRow, gameRunner.userMove(), gb);
+        // 1 - check is move is in legal format(able to be split)
+        // 2 - check if move is available in rack and in board bounds
+        while((!isMoveLegal || !isWordInRack || !isSquareMoveInBound) && !isPass){
+            humansMove = humanPlayer.move();
+            if(humansMove.equals(PASS)) isPass = true;
+            isMoveLegal = gr.legalMoveValidation(humansMove);
+            isWordInRack = gr.rackContainsMove(humansMove, humansTileRack);
+            isSquareMoveInBound = gr.isMoveInBound(humansMove, gameBoard);
+        }
 
+        System.out.println("Move legal now check if play is allowed and modify board?");
 
-        //        }
+        if(gameCounters.getRoundCounter() == 1) {
 
-        //        System.out.println("b4 " + tileBag.tileMap);
-        //        userRow.refillUserRack(tileBag);
-        //        System.out.println("Refilled userRack. Length: " + userRow.getUserRow().size());
-        //        Human humanPlayer = new Human();
-        //        humanPlayer.play();
+        }
 
-        // String playThis;
-        //                    do {
-        //                        playThis = scan.nextLine().toLowerCase();
-        //                    } while (!userRow.containsTile(playThis));
-        //            String playThis = scan.nextLine();
-        //            System.out.println(playThis);
-        //            String pieceMove = playThis.split(",")[0];
-        //            System.out.println(pieceMove);
-        //            String coordinateMove =playThis.split(",")[1];
-        //            System.out.println(coordinateMove);
+        //        scanner.close();
 
-        //        if (pieceMove.length() <= userRow.TILE_RACK_CAPACITY) {
-        //            userRow.playPiece(playThis);
-        //        }
-        //        System.out.println("after " + tileBag.tileMap);
-        //        userRow.printUserRow();
-        //
-        //        //try to locate coordinateMoves
-        //        while (coordinateMove.length() < 2 || coordinateMove.length() > 3) {
-        //            System.out.println("Invalid coordinateMove, try again");
-        //            coordinateMove = scan.nextLine();
-        //        }
-        //
-        //        if (Character.isDigit(coordinateMove.charAt(0))) {
-        //            System.out.println("is digit, go right");
-        //        } else {
-        //            System.out.println("is char, go down");
-        //        }
-
-
-        //        this.scanner.close();
     }
 
 }

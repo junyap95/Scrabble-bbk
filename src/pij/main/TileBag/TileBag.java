@@ -1,13 +1,15 @@
-package TileBag;
+package pij.main.TileBag;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class TileBag {
-
+    // this field stores all the tiles available for both players (a pool)
     public Map<String, Integer> tileMap;
 
     public TileBag(){
+        // LinkedHashMap is used so the tiles are ordered by sequence of addition
+        // is it necessary to have it ordered for the gameplay? probably not, but useful for debugging
         tileMap = new LinkedHashMap<>();
         this.tileMap.put("A1",8);
         this.tileMap.put("B3",3);
@@ -35,6 +37,7 @@ public class TileBag {
         this.tileMap.put("X9",1);
         this.tileMap.put("Y5",2);
         this.tileMap.put("Z11",1);
+        // wild card
         this.tileMap.put("_5",2);
     }
 

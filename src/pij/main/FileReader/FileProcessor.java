@@ -1,21 +1,21 @@
-package FileReader;
+package pij.main.FileReader;
 
-import GameBoard.GameBoard;
+import pij.main.GameBoard.GameBoard;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import Square.*;
+import pij.main.Square.*;
 
 public class FileProcessor {
 
-    // helper function for fileProcessor to create display string for a square
+    // helper function to create display string for a square
     private static String squareToDisplay(String line, int index) {
         return String.valueOf(line.charAt(index)) + line.charAt(index + 1) + line.charAt(index + 2);
     }
 
-    // helper function for fileProcessor to obtain score for a square
+    // helper function to obtain score for a square
     private static int squareScore(String line, int index) {
         String subStr = Character.isDigit(line.charAt(index + 2)) ?
                 line.substring(index + 1, index + 3) :
@@ -58,7 +58,7 @@ public class FileProcessor {
                 }
                 k++;
             }
-            gameBoard.setAllSquares(tileSpace);
+            gameBoard.setAllSquaresOnBoard(tileSpace);
 
         } catch (FileNotFoundException ex) {
             System.out.println("File " + gameBoard + " not found!");

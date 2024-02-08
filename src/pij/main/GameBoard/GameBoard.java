@@ -1,6 +1,7 @@
-package GameBoard;
+package pij.main.GameBoard;
 
-import Square.Square;
+import pij.main.GameRunner.GameTextPrinter;
+import pij.main.Square.Square;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +26,22 @@ public class GameBoard {
         return this.gameBoardSize % 2 == 0 ? (this.gameBoardSize / 2) - 1 : this.gameBoardSize / 2;
     }
 
+    public Square getCentreSquare() {
+        return getAllSquaresOnBoard().get(getCentreSquareIndex()).get(getCentreSquareIndex());
+    }
+
+    public Square getSquare(int x, int y) {
+        return getAllSquaresOnBoard().get(x).get(y);
+    }
+    
+    public Square getRightSquare(int x, int y) {
+        return getAllSquaresOnBoard().get(x).get(y+1);
+    }
+    
+    public Square getDownSquare(int x, int y) {
+        return getAllSquaresOnBoard().get(x+1).get(y);
+    }
+
     public void setAllSquaresOnBoard(List<List<Square>> sortedTiles) {
         this.allSquaresOnBoard = sortedTiles;
     }
@@ -38,7 +55,7 @@ public class GameBoard {
         List<List<Square>> allSquaresOnBoard = this.getAllSquaresOnBoard();
         int yAxis = 1;
 
-        PrintingUtil.printAlphabetsRow(this.gameBoardSize);
+        GameTextPrinter.printAlphabetsRow(this.gameBoardSize);
 
         for (List<Square> innerArray : allSquaresOnBoard) {
             System.out.println();
@@ -51,7 +68,7 @@ public class GameBoard {
         }
 
         System.out.println();
-        PrintingUtil.printAlphabetsRow(this.gameBoardSize);
+        GameTextPrinter.printAlphabetsRow(this.gameBoardSize);
         System.out.println();
 
     }

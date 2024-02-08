@@ -654,7 +654,7 @@ For those cases of part (1) where it is indeed possible to play `n` tiles, go th
 
 - Your implementation shall be in **Java 17**.
 
-- The class from which the program is run shall be called `Main.java` and be in the package `pij.main`.
+- The class from which the program is run shall be called `pij.main.GameRunner.java` and be in the package `pij.main`.
 
 - Your program design shall employ object-oriented principles with suitable definitions of classes/interfaces and using packages, encapsulation, polymorphism, and inheritance as appropriate for this case. 
 
@@ -695,11 +695,11 @@ The other sections (from "Description of the coursework: SkraBBKle" onward) shal
 The files of the final version of your project must be submitted via GitHub ***and*** via Moodle. We require at least the following in your submission:
 
 - `README.md` with your name and your academic declaration added in the first two sections
-- `src/pij/main/Main.java`
+- `src/pij/main/pij.main.GameRunner.java`
 - `resources/defaultBoard.txt`
 - `resources/wordlist.txt`
 
-and any other files or directories that are needed for the program started from class `Main` in package `pij.main` to run, as well as the JUnit tests.
+and any other files or directories that are needed for the program started from class `pij.main.GameRunner` in package `pij.main` to run, as well as the JUnit tests.
 
 > Note: by the deadline of coursework submission, you must have both:
 > 
