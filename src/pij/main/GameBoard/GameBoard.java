@@ -30,8 +30,17 @@ public class GameBoard {
         return getAllSquaresOnBoard().get(getCentreSquareIndex()).get(getCentreSquareIndex());
     }
 
-    public Square getSquare(int x, int y) {
+    public Square getSquareByIndex(int x, int y) {
         return getAllSquaresOnBoard().get(x).get(y);
+    }
+
+    public Square getSquareByObj(Square square) {
+        for(List<Square> list : this.getAllSquaresOnBoard()){
+            if(list.contains(square))
+                return square;
+        }
+        System.out.println("square not found");
+        return null;
     }
     
     public Square getRightSquare(int x, int y) {

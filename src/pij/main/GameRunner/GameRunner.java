@@ -6,9 +6,11 @@ import pij.main.Players.ComputerPlayer;
 import pij.main.Players.HumanPlayer;
 import pij.main.Players.Player;
 import pij.main.Square.Square;
+import pij.main.TileBag.Tile;
 import pij.main.TileBag.TileBag;
 import pij.main.TileBag.TileRack;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -18,13 +20,13 @@ public class GameRunner extends MoveValidator {
     private GameItems gameItems;
     private Player computerPlayer;
     private Player humanPlayer;
-
     public Player getHumanPlayer() {
         return humanPlayer;
     }
     public Player getComputerPlayer() {
         return computerPlayer;
     }
+
 
     // constructor, initialises a new game
     public GameRunner(){
@@ -33,7 +35,7 @@ public class GameRunner extends MoveValidator {
         // required game items initialised. assuming human versus computer for this project
         this.initNewGame();
         // based on player's choice a board is loaded and printed on console
-        this.loadBoard();
+        this.loadResources();
 
         this.setOpenOrCloseGame();
     }
@@ -55,13 +57,14 @@ public class GameRunner extends MoveValidator {
     }
 
     // helper method 2 - load/default board and prints out
-    public void loadBoard(){
+    public void loadResources(){
+        FileProcessor.loadWordList();
         GameBoard gb = this.gameItems.getGameBoard();
         GameTextPrinter.printLoadBoard();
         String playersChoice;
         playersChoice = scanner.nextLine();
 
-        if (playersChoice.equals("d")) FileProcessor.fileProcessor(gb, "defaultBoard.txt");
+        if (playersChoice.equals("d")) FileProcessor.boardProcessor(gb, "defaultBoard.txt");
         //TODO: load board
         // if (playersChoice.equals("l")) FileProcessor.fileProcessor(gb, "otherBoard.txt");
 
@@ -99,96 +102,85 @@ public class GameRunner extends MoveValidator {
         System.out.println(humansRack);
     }
 
-    public void boardUpdater() {
-        GameBoard gb = this.getGameItems().getGameBoard();
-        int centreSquareIndex = gb.getCentreSquareIndex();
-
-        if (this.getGameCounters().getRoundCounter() == 1) {
-
-        }
-    }
-
-    public boolean isMovePlayableOnBoard(Square square, GameBoard gb) {
-        List<Square> moveList = this.currentMove.createMoveList(this.gameItems.getGameBoard());
+    // create a move list based on current move
+    // get a round counter and the centre square
+    // for round one - check 1. if word list forms a word that overlaps centre square
+    // round 2 onwards - check 1. if word list overlap with any occupied square
+    // 2. check if the word formed is parallel to any existing word on the board. e.g. does the new word 'touch' in the same direction
+    public boolean isMovePlayableOnBoard() {
+        Move currentMove = this.getCurrentMove();
+        if(currentMove.isPass()) return false;
+        List<Square> moveList = this.getCurrentMove().createMoveList(this.gameItems.getGameBoard());
         int roundCounter = this.gameCounters.getRoundCounter();
         Square centreSquare = this.gameItems.getGameBoard().getCentreSquare();
 
+//        System.out.println("current move " + currentMove.getWordMove());
+//        System.out.println("moveList " +  moveList);
+//        System.out.println( "centreSquare " + centreSquare);
         if(roundCounter == 1) {
-            return moveList.contains(centreSquare); // true if contains centre square
+            boolean moveContainsCentreSquare = false;
+            // using == operator to compare Square objects
+            // rather than using .contains()
+            for(Square square : moveList) {
+                if (square == centreSquare) {
+                    moveContainsCentreSquare = true;
+                    break;
+                }
+            }
+//            System.out.println("contains centre square: " + moveContainsCentreSquare);
+            if(!moveContainsCentreSquare){
+//                System.out.println("In the first round, the word played must include the centre square.");
+                return false; // true if contains centre square
+            }
+            return FileProcessor.wordListProcessor(currentMove.getWordMove()); // after checking centre square just check if word is in word list
         }
 
         for(Square sq : moveList){
+            boolean isSquareOccupied;
             if(sq.isSquareOccupied()) return true; // if contains >= 1 occupied square
         }
 
-        return false;// if no overlap of >= 1 square
+        System.out.println("No Overlap");
+        return false;// if no overlap of at least 1 square
     }
 
-//    public boolean playersMoveValidation() {
-//        String humanPlayersMove = this.humanPlayer.move();
-//
-//
-//
-//        // verifies if position played allowed, managed by board?
-//        char columnChar = 0;
-//        StringBuilder rowChar = new StringBuilder();
-//        for (int i = 0; i < positionMove.length(); i++) {
-//            if (Character.isDigit(positionMove.charAt(i))) {
-//                rowChar.append(positionMove.charAt(i));
-//            } else {
-//                columnChar += positionMove.charAt(i);
-//            }
-//        }
-//
-//        //boundary check, managed by board?
-//        if (Integer.parseInt(rowChar.toString()) > gameBoard.getGameBoardSize() || columnChar >= 'a' + gameBoard.getGameBoardSize()) {
-//            System.out.println("Illegal move format");
-//            validPosition = false;
-//            return validPosition;
-//        }
-//
-//        int rowIndex = Integer.parseInt(rowChar.toString()) - 1;
-//        int colIndex = columnChar - 97;
-//        Square startSquare = gameBoard.getAllSquares().get(rowIndex).get(colIndex);
-//        int lengthOfTravel = tileMove.length();
-//        String directionOfTravel = Character.isDigit(positionMove.charAt(0)) ? "RIGHTWARD" : "DOWNWARD";
-//        System.out.println("length of travel " + lengthOfTravel);
-//        System.out.println(directionOfTravel);
-//        System.out.println("start square is " + startSquare);
-//
-//        if (directionOfTravel.equals("RIGHTWARD")) {
-//            updateSquareList("RIGHTWARD", lengthOfTravel, rowIndex, colIndex, input, tileRack, gameBoard);
-//        } else {
-//            updateSquareList("DOWNWARD", lengthOfTravel, rowIndex, colIndex, input, tileRack, gameBoard);
-//        }
-//
-//        gameBoard.printGameBoard();
-//
-//        return true;
-//
-//    }
-//
-//    public void updateSquareList(String directionOfTravel, int lengthOfTravel, int rowIndex, int colIndex, List<String> input, TileRack tileRack, GameBoard gb) {
-//        List<String> tileReplaceSquare = tileRack.getUserRow().stream()
-//                .map(t -> (t.getDisplayOnBoard()).toUpperCase())
-//                .toList();
-//        System.out.println(tileReplaceSquare);
-//        List<List<Square>> squareList = gb.getAllSquares();
-//        for (int i = 0; i < lengthOfTravel; i++) {
-//            String current = input.get(i);
-//            List<String> toBeReplaced = tileReplaceSquare.stream()
-//                    .filter(s -> current.equals(String.valueOf(s.charAt(0)).toUpperCase()))
-//                    .toList();
-//            if (directionOfTravel.equals("RIGHTWARD")) {
-//                squareList.get(rowIndex).get(colIndex + i).setDisplay(toBeReplaced.getFirst().length() > 2 ? toBeReplaced.getFirst() : toBeReplaced.getFirst() + " ");
-//
-//            }
-//            if (directionOfTravel.equals("DOWNWARD")) {
-//                squareList.get(rowIndex + i).get(colIndex).setDisplay(toBeReplaced.getFirst().length() > 2 ? toBeReplaced.getFirst() : toBeReplaced.getFirst() + " ");
-//
-//            }
-//
-//
-//        }
-//    }
+    public void updateGameBoard(GameBoard gb) {
+        List<String> wordMoveList = this.currentMove.getWordMoveList(); // ["D", "O", "G"]
+        List<Tile> playerRack = this.gameItems.getHumansTileRack().getPlayersRack();
+        List<String> stringToBePlacedOnBoard = new ArrayList<>();
+        int x = this.currentMove.getStartSquareX();
+        int y = this.currentMove.getStartSquareY();
+
+        for(String s : wordMoveList) {
+            boolean charIsLowerCase = Character.isLowerCase(s.charAt(0));
+            for(Tile tile : playerRack) {
+                if(charIsLowerCase && tile.getDisplayAsLetter().equals("_")){
+                    stringToBePlacedOnBoard.add(tile.getDisplayOnBoard().replace("_",s));
+                    break;
+                }
+
+                if(s.equals(tile.getDisplayAsLetter())){
+                    stringToBePlacedOnBoard.add(tile.getDisplayOnBoard());
+                    break;
+                }
+
+            }
+        }
+
+        System.out.println("string to be placed on board: " + stringToBePlacedOnBoard);
+
+        for (int i = 0; i < wordMoveList.size(); i++) {
+            int stringSize = stringToBePlacedOnBoard.get(i).length();
+
+            if(this.currentMove.getMoveDirection().equals("RIGHTWARD")){
+                // System.out.println("square "+gb.getSquareByIndex(x,y+i));
+                gb.getSquareByIndex(x,y+i).setSquareDisplayOnBoard(stringSize > 2 ? stringToBePlacedOnBoard.get(i) : stringToBePlacedOnBoard.get(i) + " ");
+            } else {
+                // System.out.println("square "+ gb.getSquareByIndex(x+i,y));
+                gb.getSquareByIndex(x+i,y).setSquareDisplayOnBoard(stringSize > 2 ? stringToBePlacedOnBoard.get(i) : stringToBePlacedOnBoard.get(i) + " ");
+
+            }
+        }
+        gb.printGameBoard();
+    }
 }

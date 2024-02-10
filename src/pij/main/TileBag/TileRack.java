@@ -1,9 +1,9 @@
 package pij.main.TileBag;
 
-import pij.main.GameRunner.GameTextPrinter;
-
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 public class TileRack {
     public final int TILE_RACK_CAPACITY = 7;
@@ -13,11 +13,9 @@ public class TileRack {
         // obtain all the available tiles and individual amount from the pool
         // when refilling player's racks, the pool will update the amount of tiles
         Map<String, Integer> tileMap = tileBag.getTileMap();
-        System.out.println(tileMap);
-        // create a set list, with no duplicates (i.e. tile A to Z)
+        // create a set list, with no duplicates (i.e. tile A to Z and wildcard)
         // this is to allow for random tile allocation for every refill action
         List<String> setList = new ArrayList<>(tileMap.keySet());
-        System.out.println(setList);
         Random rand = new Random();
         int numOfTilesToBeRefilled = TILE_RACK_CAPACITY - this.playersRack.size();
 
@@ -53,7 +51,6 @@ public class TileRack {
     public List<Tile> getPlayersRack() {
         return playersRack;
     }
-
 
 
     public void printUserRack() {

@@ -3,7 +3,6 @@ package pij.main.GameRunner;
 import pij.main.GameBoard.GameBoard;
 import pij.main.TileBag.Tile;
 import pij.main.TileBag.TileRack;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +14,10 @@ public class MoveValidator {
     boolean rackHasMove;
     boolean moveIsInBound;
     Move currentMove;
+
+    public Move getCurrentMove() {
+        return currentMove;
+    }
 
     public boolean splittableMove(String move) {
         if (move.split(",").length != 2) {
@@ -62,14 +65,12 @@ public class MoveValidator {
         // e.g. "16a" or "e1"
         if (wordMove.length() > LONGEST_PERMITTED_WORD_STRING || wordMove.isEmpty() || squareMove.length() > LONGEST_PERMITTED_SQUARE_STRING || squareMove.length() < 2) {
             GameTextPrinter.printIllegalMoveFormat();
-            System.out.println("why here");
             return false;
         }
 
         if (squareMove.length() == LONGEST_PERMITTED_SQUARE_STRING) {
             // square move cannot be - 1a6, 1b4...
             if (Character.isLetter(squareMove.charAt(1))) {
-                System.out.println("here?");
                 GameTextPrinter.printIllegalMoveFormat();
                 return false;
             }
@@ -133,7 +134,7 @@ public class MoveValidator {
         String wordMove = this.getWordMove(move);
         String squareMove = this.getSquareMove(move); // e.g. "a16"
         // this value is used to check if the word played will exceed the board bounds
-        int lengthOfTravel = wordMove.length() - 1;
+        int lengthOfTravel = wordMove.length();
         char letter = 'a'; // 'a' is a dummy char, will be replaced
         StringBuilder digitBuilder = new StringBuilder();
         for (char ch : squareMove.toCharArray()) {
@@ -151,9 +152,9 @@ public class MoveValidator {
         // if move direction is downward, check if the digit will be in bound*
         // *with consideration of the length of travel
         if (getSquareMoveDirection(move).equals("RIGHTWARD")) {
-            moveInBound = ((letter + lengthOfTravel) < 'a' + gb.getGameBoardSize());
+            moveInBound = ((letter + lengthOfTravel - 1) < 'a' + gb.getGameBoardSize());
         } else {
-            moveInBound = (digit + lengthOfTravel <= gb.getGameBoardSize());
+            moveInBound = (digit + lengthOfTravel - 1 <= gb.getGameBoardSize());
         }
 
         if (moveInBound) {
