@@ -37,7 +37,9 @@ public class GameItems {
         this.computersTileRack = computersTileRack;
     }
 
-
+    private void setTileRack(TileRack tileRack, TileBag tileBag) {
+        tileRack.setTileBag(tileBag);
+    }
 
     // shared game items
     TileBag tileBag;
@@ -49,7 +51,9 @@ public class GameItems {
     public GameItems() {
         this.tileBag = new TileBag();
         this.humansTileRack = new TileRack();
+        this.setTileRack(this.getHumansTileRack(),this.getTileBag());
         this.computersTileRack = new TileRack();
+        this.setTileRack(this.getComputersTileRack(),this.getTileBag());
         this.gameBoard = new GameBoard();
     }
 }

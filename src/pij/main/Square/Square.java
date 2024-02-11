@@ -42,11 +42,10 @@ public class Square {
 
     public void setTileOnSquare(Tile tileOnSquare) {
         this.tileOnSquare = tileOnSquare;
-        this.isSquareOccupied = true;
     }
 
-    public void setSquareOccupied(boolean squareOccupied) {
-        isSquareOccupied = squareOccupied;
+    public void setSquareOccupied() {
+        isSquareOccupied = true;
     }
 
     @Override

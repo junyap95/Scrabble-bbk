@@ -6,4 +6,14 @@ public class ComputerPlayer implements Player {
     public String move() {
         return ",";
     }
+
+    @Override
+    public int getPlayerScore() {
+        return 0;
+    }
+
+    @Override
+    public void updateScore(int playerScore) {
+
+    }
 }

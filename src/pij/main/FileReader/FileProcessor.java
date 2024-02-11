@@ -83,10 +83,10 @@ public class FileProcessor {
                             tileSpace.get(k).add(new Square(SquareType.NORMAL, " . ", 1));
                             break;
                         case '{':
-                            tileSpace.get(k).add(new Square(SquareType.PREMIUM_LETTER, squareToDisplay(line, i), squareScore(line, i)));
+                            tileSpace.get(k).add(new Square(SquareType.PREMIUM_WORD, squareToDisplay(line, i), squareScore(line, i)));
                             break;
                         case '(':
-                            tileSpace.get(k).add(new Square(SquareType.PREMIUM_WORD, squareToDisplay(line, i), squareScore(line, i)));
+                            tileSpace.get(k).add(new Square(SquareType.PREMIUM_LETTER, squareToDisplay(line, i), squareScore(line, i)));
                             break;
                         default:
                             break;

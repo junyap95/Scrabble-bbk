@@ -5,7 +5,7 @@ import pij.main.TileBag.TileRack;
 import java.util.Scanner;
 
 public interface Player {
-     int playerScore = 0;
-
      String move();
+     public int getPlayerScore();
+     public void updateScore(int playerScore);
 }

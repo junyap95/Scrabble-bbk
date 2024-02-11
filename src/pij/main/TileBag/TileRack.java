@@ -8,11 +8,20 @@ import java.util.Random;
 public class TileRack {
     public final int TILE_RACK_CAPACITY = 7;
     private List<Tile> playersRack = new ArrayList<>();
+    private TileBag tileBag; // pointer to the pool of tiles
 
-    public void refillUserRack(TileBag tileBag) {
+    public TileBag getTileBag() {
+        return tileBag;
+    }
+
+    public void setTileBag(TileBag tileBag) {
+        this.tileBag = tileBag;
+    }
+
+    public void refillUserRack() {
         // obtain all the available tiles and individual amount from the pool
         // when refilling player's racks, the pool will update the amount of tiles
-        Map<String, Integer> tileMap = tileBag.getTileMap();
+        Map<String, Integer> tileMap = this.tileBag.getTileMap();
         // create a set list, with no duplicates (i.e. tile A to Z and wildcard)
         // this is to allow for random tile allocation for every refill action
         List<String> setList = new ArrayList<>(tileMap.keySet());

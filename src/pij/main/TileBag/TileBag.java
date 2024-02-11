@@ -45,4 +45,8 @@ public class TileBag {
         return tileMap;
     }
 
+    @Override
+    public String toString() {
+        return "TileBag{" + "tileMap=" + tileMap + '}';
+    }
 }
