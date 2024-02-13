@@ -73,28 +73,31 @@ public class FileProcessor {
 
             // analyses the txt file line-by-line, then allocates appropriate squares to the game board in a 2D-array
             String line;
-            int k = 0;
-            List<List<Square>> tileSpace = new ArrayList<>();
+            int k = 0; // this is to access each arraylist in the main arraylist
+            List<List<Square>> allSquaresOnBoard = new ArrayList<>(); // 'main' 2D arraylist
             while ((line = reader.readLine()) != null) {
-                tileSpace.add(new ArrayList<>());
+                allSquaresOnBoard.add(new ArrayList<>()); // 'inner' arraylist - each line in the txt file will occupy one arraylist
                 for (int i = 0; i < line.length(); i++) {
+                    Square squareCreated = null;
                     switch (line.charAt(i)) {
                         case '.':
-                            tileSpace.get(k).add(new Square(SquareType.NORMAL, " . ", 1));
+                            squareCreated = new Square(SquareType.NORMAL, " . ", 1);
                             break;
                         case '{':
-                            tileSpace.get(k).add(new Square(SquareType.PREMIUM_WORD, squareToDisplay(line, i), squareScore(line, i)));
+                            squareCreated = new Square(SquareType.PREMIUM_WORD, squareToDisplay(line, i), squareScore(line, i));
                             break;
                         case '(':
-                            tileSpace.get(k).add(new Square(SquareType.PREMIUM_LETTER, squareToDisplay(line, i), squareScore(line, i)));
+                            squareCreated = new Square(SquareType.PREMIUM_LETTER, squareToDisplay(line, i), squareScore(line, i));
                             break;
                         default:
-                            break;
+                            continue;
                     }
+                    allSquaresOnBoard.get(k).add(squareCreated);
                 }
                 k++;
             }
-            gameBoard.setAllSquaresOnBoard(tileSpace);
+            gameBoard.setAllSquaresOnBoard(allSquaresOnBoard);
+            createSquareNeighbours(allSquaresOnBoard);
 
         } catch (FileNotFoundException ex) {
             System.out.println("File " + gameBoard + " not found!");
@@ -103,7 +106,32 @@ public class FileProcessor {
         }
     }
 
+    // helper method - for when the 2D array is established
+    private static void createSquareNeighbours(List<List<Square>> allSquaresOnBoard){
 
+        // add square neighbours relationship
+        for (int i = 0; i < allSquaresOnBoard.size(); i++) {
+            for (int j = 0; j < allSquaresOnBoard.get(i).size(); j++) {
+                Square square = allSquaresOnBoard.get(i).get(j);
+                if(i > 0) { // i > 0 means it's not the first inner arraylist - square j has a top neighbour
+                    square.setTopNeighbour(allSquaresOnBoard.get(i-1).get(j));
+                }
+                if(i < allSquaresOnBoard.size()-1) { // if it is not the last arraylist - square has a bottom neighbour
+                    square.setBottomNeighbour(allSquaresOnBoard.get(i+1).get(j));
+                }
+                if(j > 0 && j < allSquaresOnBoard.get(i).size() - 1){ // if j is not the first and last square - has left and right neighbours
+                    square.setLeftNeighbour(allSquaresOnBoard.get(i).get(j-1));
+                    square.setRightNeighbour(allSquaresOnBoard.get(i).get(j+1));
+                }
+                if(j == 0){
+                    square.setRightNeighbour(allSquaresOnBoard.get(i).get(j+1));
+                }
+                if(j == allSquaresOnBoard.get(i).size() - 1){
+                    square.setLeftNeighbour(allSquaresOnBoard.get(i).get(j-1));
+                }
+            }
+        }
+    }
 }
 
 

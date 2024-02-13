@@ -34,23 +34,6 @@ public class GameBoard {
         return getAllSquaresOnBoard().get(x).get(y);
     }
 
-    public Square getSquareByObj(Square square) {
-        for(List<Square> list : this.getAllSquaresOnBoard()){
-            if(list.contains(square))
-                return square;
-        }
-        System.out.println("square not found");
-        return null;
-    }
-    
-    public Square getRightSquare(int x, int y) {
-        return getAllSquaresOnBoard().get(x).get(y+1);
-    }
-    
-    public Square getDownSquare(int x, int y) {
-        return getAllSquaresOnBoard().get(x+1).get(y);
-    }
-
     public void setAllSquaresOnBoard(List<List<Square>> sortedTiles) {
         this.allSquaresOnBoard = sortedTiles;
     }
@@ -58,7 +41,6 @@ public class GameBoard {
     public void setGameBoardSize(int gameBoardSize) {
         this.gameBoardSize = gameBoardSize;
     }
-
 
     public void printGameBoard() {
         List<List<Square>> allSquaresOnBoard = this.getAllSquaresOnBoard();

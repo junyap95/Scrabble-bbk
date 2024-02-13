@@ -5,6 +5,15 @@ import pij.main.TileBag.TileBag;
 import pij.main.TileBag.TileRack;
 
 public class GameItems {
+    // shared game items
+    TileBag tileBag;
+    GameBoard gameBoard;
+
+    public GameItems() {
+        this.gameBoard = new GameBoard(); // 1
+        this.tileBag = new TileBag(); // 2
+    }
+
     public TileBag getTileBag() {
         return tileBag;
     }
@@ -19,41 +28,5 @@ public class GameItems {
 
     public void setGameBoard(GameBoard gameBoard) {
         this.gameBoard = gameBoard;
-    }
-
-    public TileRack getHumansTileRack() {
-        return humansTileRack;
-    }
-
-    public void setHumansTileRack(TileRack humansTileRack) {
-        this.humansTileRack = humansTileRack;
-    }
-
-    public TileRack getComputersTileRack() {
-        return computersTileRack;
-    }
-
-    public void setComputersTileRack(TileRack computersTileRack) {
-        this.computersTileRack = computersTileRack;
-    }
-
-    private void setTileRack(TileRack tileRack, TileBag tileBag) {
-        tileRack.setTileBag(tileBag);
-    }
-
-    // shared game items
-    TileBag tileBag;
-    GameBoard gameBoard;
-    // player related fields
-    TileRack humansTileRack;
-    TileRack computersTileRack;
-
-    public GameItems() {
-        this.tileBag = new TileBag();
-        this.humansTileRack = new TileRack();
-        this.setTileRack(this.getHumansTileRack(),this.getTileBag());
-        this.computersTileRack = new TileRack();
-        this.setTileRack(this.getComputersTileRack(),this.getTileBag());
-        this.gameBoard = new GameBoard();
     }
 }

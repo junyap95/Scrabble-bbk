@@ -9,19 +9,59 @@ import java.util.List;
 
 public class Move {
 
+    String moveString;
     String moveDirection;
     String wordMove; // "DOG"
+    String squareMove; // "a1"
     List<String> wordMoveList; // ["D", "O", "G"]
     char squareMoveLetter; // 'a'
     int squareMoveDigit; // 16
-    int travelLength;
-    List<Square> moveList;
+    List<Square> listOfSquaresToBeOccupied;
+
+
     int startSquareX;
     int startSquareY;
     boolean isPass;
 
+    public Move(String moveString) {
+        System.out.println("Move init");
+        this.moveString = moveString;
+        this.wordMove = moveString.split(",")[0];
+        this.squareMove = moveString.split(",")[1];
+        this.setMoveDirection();
+        this.setSquareMoveLetterAndDigit();
+        this.startSquareX = this.squareMoveDigit - 1;
+        this.startSquareY = this.squareMoveLetter - 97;
+
+        this.wordMoveList = this.createWordMoveList(wordMove);
+        this.squareMoveLetter = squareMoveLetter;
+        this.squareMoveDigit = squareMoveDigit;
+        this.isPass = false;
+    }
+
+    public void setSquareMoveLetterAndDigit(){
+        char letter = 'a'; // 'a' is a dummy to be replaced
+        StringBuilder digitBuilder = new StringBuilder();
+        for (char ch : this.squareMove.toCharArray()) {
+            if (Character.isLetter(ch)) {
+                letter = ch; // e.g. f
+            } else {
+                if (Character.isDigit(ch)) digitBuilder.append(ch);
+            }
+        }
+        int digit = Integer.parseInt(digitBuilder.toString()); // e.g. 16
+
+        this.squareMoveLetter = letter;
+        this.squareMoveDigit = digit;
+    }
+
+    public void setMoveDirection() {
+        boolean firstCharIsDigit = Character.isDigit(this.squareMove.charAt(0));
+        this.moveDirection = firstCharIsDigit? "RIGHTWARD" : "DOWNWARD";
+    }
+
     public void setIsPassTrue() {
-        this.isPass = true;
+        this.isPass = this.moveString.equals(",");
     }
 
     public boolean isPass() {
@@ -29,31 +69,21 @@ public class Move {
     }
 
     public String getMoveDirection() {
-        return moveDirection;
+        return this.moveDirection;
     }
-
     public String getWordMove() {
-        return wordMove;
+        return this.wordMove;
+    }
+    public String getSquareMove() {
+        return this.squareMove;
     }
 
     public int getTravelLength() {
-        return travelLength;
-    }
-
-    public char getSquareMoveLetter() {
-        return squareMoveLetter;
-    }
-
-    public int getSquareMoveDigit() {
-        return squareMoveDigit;
+        return this.wordMove.length();
     }
 
     public List<String> getWordMoveList() {
         return wordMoveList;
-    }
-
-    public List<Square> getMoveList() {
-        return moveList;
     }
 
     public int getStartSquareX() {
@@ -64,42 +94,61 @@ public class Move {
         return startSquareY;
     }
 
-    public Move(String moveDirection, String wordMove, char squareMoveLetter, int squareMoveDigit, int travelLength) {
-        this.moveDirection = moveDirection;
-        this.wordMove = wordMove;
-        this.wordMoveList = this.createWordMoveList(wordMove);
-        this.travelLength = travelLength;
-        this.squareMoveLetter = squareMoveLetter;
-        this.squareMoveDigit = squareMoveDigit;
-        this.startSquareX = this.getSquareMoveDigit() -1;
-        this.startSquareY = this.getSquareMoveLetter()-97;
-        this.isPass = false;
-    }
-
-    // this is the list of squares that will be used to
-    // check if it contains centre square or
-    // check if there is any overlap
-    public List<Square> createMoveList(GameBoard gb) {
-        if(this.isPass()) return null;
-        // 2D arraylist of all the squares
-        int x = this.getStartSquareX();
-        // System.out.println(x);
-        int y = this.getStartSquareY();
-        // System.out.println(y);
+    // this is the list of squares that will be occupied by tiles played
+    public String getWordFormed(GameBoard gb) {
+        if (this.isPass()) return null;
         int travelLength = this.getTravelLength();
-        List<Square> moveList = new ArrayList<>();
-        for (int i = 0; i < travelLength; i++) {
-            if(this.getMoveDirection().equals("RIGHTWARD")) {
-                moveList.add(gb.getSquareByIndex(x, y + i));
-            } else {
-                moveList.add(gb.getSquareByIndex(x + i, y));
-            }
+        Square startSquare = this.getStartSquare(gb);
+        Square leftPointer = startSquare.getLeftNeighbour() == null ? null : startSquare.getLeftNeighbour();
+        Square topPointer = startSquare.getTopNeighbour() == null ? null : startSquare.getTopNeighbour();
+        StringBuilder stringBuilderLeft = new StringBuilder();
+        StringBuilder stringBuilderRight = new StringBuilder();
+
+        List<Square> listOfSquaresToBeOccupied = new ArrayList<>();
+
+        System.out.println(this.getMoveDirection());
+        while(this.getMoveDirection().equals("RIGHTWARD") && leftPointer != null && leftPointer.isSquareOccupied()){
+            stringBuilderLeft.append(leftPointer.getTileOnSquare().getDisplayAsLetter());
+            leftPointer = leftPointer.getLeftNeighbour();
         }
-        this.moveList = moveList;
-        return this.getMoveList();
+
+        while(this.getMoveDirection().equals("DOWNWARD") && topPointer != null && topPointer.isSquareOccupied()){
+            stringBuilderLeft.append(topPointer.getTileOnSquare().getDisplayAsLetter());
+            topPointer = topPointer.getBottomNeighbour();
+        }
+
+
+        System.out.println(this.moveString);
+        for (int i = 0; i < travelLength; i++) {
+            System.out.println("r"+i+stringBuilderRight);
+            if (!startSquare.isSquareOccupied()) {
+                System.out.println("not occupied");
+                listOfSquaresToBeOccupied.add(startSquare);
+                stringBuilderRight.append(this.moveString.charAt(i));
+            }
+
+            if(startSquare.isSquareOccupied()) {
+                System.out.println("occupied");
+                stringBuilderRight.append(startSquare.getTileOnSquare().getDisplayAsLetter());
+                i--;
+            }
+            startSquare = this.getMoveDirection().equals("RIGHTWARD") ? startSquare.getRightNeighbour() : startSquare.getBottomNeighbour();
+
+        }
+        this.listOfSquaresToBeOccupied = listOfSquaresToBeOccupied;
+        System.out.println("word formed: " + stringBuilderLeft.reverse() + stringBuilderRight);
+        return stringBuilderLeft.reverse() + stringBuilderRight.toString();
     }
 
     private List<String> createWordMoveList(String s) {
         return Arrays.stream(s.split("")).toList();
+    }
+
+    public Square getStartSquare(GameBoard gb) {
+        return gb.getSquareByIndex(this.getStartSquareX(), this.getStartSquareY());
+    }
+
+    public List<Square> getListOfSquaresToBeOccupied() {
+        return listOfSquaresToBeOccupied;
     }
 }

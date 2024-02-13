@@ -1,65 +1,62 @@
 package pij.main.GameRunner;
 
+import pij.main.FileReader.FileProcessor;
 import pij.main.GameBoard.GameBoard;
+import pij.main.Square.Square;
 import pij.main.TileBag.Tile;
 import pij.main.TileBag.TileRack;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
 public class MoveValidator {
     private final int LONGEST_PERMITTED_WORD_STRING = 7;
     private final int LONGEST_PERMITTED_SQUARE_STRING = 3;
-    boolean isLegal;
-    boolean rackHasMove;
-    boolean moveIsInBound;
     Move currentMove;
+    String moveString;
+    GameBoard gameBoard;
 
-    public Move getCurrentMove() {
-        return currentMove;
+    // CONSTRUCTOR
+    public MoveValidator(String moveString, GameBoard gameBoard) {
+        this.moveString = moveString;
+        this.gameBoard = gameBoard;
+        this.currentMove = isMoveSplittable() ? new Move(this.moveString) : null;
     }
 
-    public boolean splittableMove(String move) {
-        if (move.split(",").length != 2) {
-            GameTextPrinter.printIllegalMoveFormat();
-            return false;
-        }
-        return true;
-    }
-
-    public String getWordMove(String move) {
-        return move.split(",")[0];
-    }
-
-    public String getSquareMove(String move) {
-        return move.split(",")[1];
-    }
-
-    public String getSquareMoveDirection(String move) {
-        boolean firstCharIsDigit = Character.isDigit(getSquareMove(move).charAt(0));
-        if (firstCharIsDigit) return "RIGHTWARD";
-        return "DOWNWARD";
-    }
-
-    public boolean legalMoveValidation(String move) {
+    // constructor helper method - for new Move creation
+    public boolean isMoveSplittable() {
+        String move = this.moveString;
         // the bare minimum requirement for a string must include one comma
         if (!move.contains(",")) {
             GameTextPrinter.printIllegalMoveFormat();
             return false;
         }
 
-        // split the input into 2 parts as below
-        // if it is not 2 parts, means there are >1 comma included
-        if (!this.splittableMove(move)) {
+        // if not 2-part splitting, there are >1 comma included
+        if (move.split(",").length != 2 && !move.equals(",")) {
             GameTextPrinter.printIllegalMoveFormat();
             return false;
         }
 
-        String wordMove = getWordMove(move); // i.e. "HI"
-        String squareMove = getSquareMove(move); // i.e. "f4"
+        return true;
+    }
 
-        // check both moves lengths, empty string is not allowed
-        // longest permitted word move is always 7, shortest 1
+    public Move getCurrentMove() {
+        return currentMove;
+    }
+
+    // check 1 - format
+    public boolean isMoveFormatLegal() {
+        if(this.currentMove == null) return false;
+        if(this.currentMove.isPass) return true;
+
+        String wordMove = this.currentMove.getWordMove(); // i.e. "HI"
+        String squareMove = this.currentMove.getSquareMove(); // i.e. "f4"
+
+        // check both split moves lengths, empty string is not allowed
+        // longest permitted word move is always 7 letters, shortest 1 letter
         // e.g. "BOOLEAN" or "A"
         // longest permitted square move is always 3, shortest 2
         // e.g. "16a" or "e1"
@@ -68,8 +65,9 @@ public class MoveValidator {
             return false;
         }
 
+        // guard case for square move of length 3 - will never allow letter in middle: 1a6, 1b4...
+        // square move cannot be - aa1, 1bc...must contain exactly one letter: 16a, 1a, a13, a3...
         if (squareMove.length() == LONGEST_PERMITTED_SQUARE_STRING) {
-            // square move cannot be - 1a6, 1b4...
             if (Character.isLetter(squareMove.charAt(1))) {
                 GameTextPrinter.printIllegalMoveFormat();
                 return false;
@@ -77,97 +75,148 @@ public class MoveValidator {
 
             int letterCount = 0;
             for (char ch : squareMove.toCharArray()) {
-                // square move cannot be - aa1, 1bc...
-                // must be exactly one letter - 16a, 1a, a13, a3...
                 if (Character.isLetter(ch)) letterCount++;
-                if (letterCount != 1) {
-                    GameTextPrinter.printIllegalMoveFormat();
-                    return false;
-                }
+            }
+
+            if (letterCount != 1) {
+                GameTextPrinter.printIllegalMoveFormat();
+                return false;
             }
         }
-
-        this.isLegal = true;
         return true;
     }
 
-    public boolean rackContainsMove(String move, TileRack rack) {
-        if (!this.isLegal) return false;
-        // create a list of only the letters of a tile (excluding score)
-        List<String> list = rack.getPlayersRack().stream().map(Tile::getDisplayAsLetter).toList();
-        // make a shallow copy of the above
-        List<String> listOfLettersFromRack = new ArrayList<>(list);
+    // check 2 - player's tile rack availability
+    public boolean rackContainsMove(TileRack tileRack) {
 
-        String wordMove = getWordMove(move);
-        List<String> wordMoveArray = List.of(wordMove.split("")); // [H, I]
+        // obtain a list of only the letters of a tile (excluding score)
+        List<String> listOfLettersFromRack = new ArrayList<>(tileRack.getPlayersTilesAsLetters());
 
-        for (String s : wordMoveArray) {
-            // lowercase letter is to check against wildcard in rack
+        System.out.println(listOfLettersFromRack);
+
+        String[] wordMove = this.currentMove.getWordMove().split(""); // [H, I]
+        System.out.println(Arrays.toString(wordMove));
+
+        for (String s : wordMove) {
+            // lowercase letter is to check for wildcard in rack
             boolean isLowerCase = Character.isLowerCase(s.charAt(0));
 
-            // wildcard case, if one of the letter is lowercase, check if wildcard("_") is available
+            // if one of the letters is lowercase, check if wildcard("_") is available
             if (isLowerCase && !listOfLettersFromRack.contains("_")) {
-                GameTextPrinter.printTilesNotInRack(rack, s);
+                GameTextPrinter.printTilesNotInRack(tileRack, this.moveString);
                 return false;
             }
 
             // normal capital letter case
             if (!isLowerCase && !listOfLettersFromRack.contains(s)) {
-                GameTextPrinter.printTilesNotInRack(rack, move);
+                GameTextPrinter.printTilesNotInRack(tileRack, this.moveString);
                 return false;
             }
 
             String toBeRemoved = isLowerCase ? "_" : s;
-            // if the letter is allowed, remove the letter from the shallow copy
-            // so duplicated words played will be checked against rack availability
-            // e.g "HH,a1" is not allowed for rack [H4, S1, T1, I1, E1, T1, Y5]
+            // if the letter is allowed, remove the letter from the shallow listOfLettersFromRack
+            // so duplicated words played will be checked against rack availability, in this loop
+            // e.g "HH,a1" is not allowed for rack [H4, S1, T1, I1, E1, T1, Y5] which only has one 'H'
             listOfLettersFromRack.remove(toBeRemoved);
         }
-        this.rackHasMove = true;
+
         return true;
     }
 
-    // helper method - split squareMove into letter and digit
+    public boolean isMovePermitted(TileRack playerRack, GameCounters gameCounters) {
+        return isMoveFormatLegal() && rackContainsMove(playerRack) && isMovePlayableOnBoard(gameCounters);
+    }
 
-    public boolean isMoveInBound(String move, GameBoard gb) {
-        if (!this.isLegal || !this.rackHasMove) return false;
-        String wordMove = this.getWordMove(move);
-        String squareMove = this.getSquareMove(move); // e.g. "a16"
-        // this value is used to check if the word played will exceed the board bounds
-        int lengthOfTravel = wordMove.length();
-        char letter = 'a'; // 'a' is a dummy char, will be replaced
-        StringBuilder digitBuilder = new StringBuilder();
-        for (char ch : squareMove.toCharArray()) {
-            if (Character.isLetter(ch)) {
-                letter = ch;
-            } else {
-                if (Character.isDigit(ch)) digitBuilder.append(ch);
+    public boolean isMovePlayableOnBoard(GameCounters gameCounters) {
+        if(this.currentMove == null || this.currentMove.isPass()) return false;
+
+        String wordFormedFromMove = this.getCurrentMove().getWordFormed(this.gameBoard);
+        Square centreSquare = this.gameBoard.getCentreSquare(); // needed for first round
+        String direction = this.currentMove.getMoveDirection();
+        List<Square> listOfSquaresToBeOccupied = this.currentMove.getListOfSquaresToBeOccupied();
+
+        System.out.println("2nd round word formed" + wordFormedFromMove);
+        // in first round only
+        if (gameCounters.getRoundCounter() == 1) return this.moveContainsCentreSquare(listOfSquaresToBeOccupied, centreSquare);
+
+//        // round 2 onwards
+//        boolean sharedSquare= false;
+//        for (Square sq : moveList) {
+//            if(direction.equals("RIGHTWARD")){
+//
+//            }
+//
+//            if (sq.isSquareOccupied()) {
+//                sharedSquare = true;
+//                break;
+//            }
+//        }
+//
+//        boolean nextToParallelWord = false;
+//        boolean isWordChecked = false;
+//        StringBuilder front = new StringBuilder();
+//        StringBuilder back = new StringBuilder();
+//        int k = 0;
+//        System.out.println("No Overlap");
+        return true;// if no overlap of at least 1 square
+    }
+
+    // helper method (for first move of the game) - check if moves contain centre square, and forms a legit word
+    private boolean moveContainsCentreSquare(List<Square> moveList, Square centreSquare) {
+        for (Square square : moveList) {
+            if (square == centreSquare) {
+                // after checking centre square just check if word is in word list
+                return FileProcessor.wordListProcessor(currentMove.getWordMove());
             }
         }
-        int digit = Integer.parseInt(digitBuilder.toString()); // e.g. 16
-
-        boolean moveInBound;
-        String moveDirection = getSquareMoveDirection(move);
-        // if move direction is rightward, check if the letter will be in bound*
-        // if move direction is downward, check if the digit will be in bound*
-        // *with consideration of the length of travel
-        if (getSquareMoveDirection(move).equals("RIGHTWARD")) {
-            moveInBound = ((letter + lengthOfTravel - 1) < 'a' + gb.getGameBoardSize());
-        } else {
-            moveInBound = (digit + lengthOfTravel - 1 <= gb.getGameBoardSize());
-        }
-
-        if (moveInBound) {
-            this.moveIsInBound = true;
-            this.currentMove = new Move(moveDirection, wordMove, letter, digit, lengthOfTravel);
-            return true;
-        }
-
-        System.out.println("Illegal move, move result out of bounds");
-        return false;
+        System.out.println("Illegal move. In the first round, one of your tiles must be placed on the centre square in the first round.");
+        return false; // if the loop finished - the moveList does not contain centre square - invalid move
     }
 
-    public boolean moveIsVerified(){
-        return isLegal && rackHasMove && moveIsInBound;
-    }
+
+    // check 3 - move in board's boundary of S*S
+//    public boolean isMoveInBound(String move, GameBoard gb, TileRack tileRack) {
+//
+//        String wordMove = this.currentMove.getWordMove();
+//        String squareMove = this.currentMove.getSquareMove(); // e.g. "a16"
+//
+//        // this value is used to check if the word played will exceed the board bounds
+//        int lengthOfTravel = this.currentMove.getTravelLength();
+//
+//        char letter = 'a'; // 'a' is a dummy char, will be replaced
+//        StringBuilder digitBuilder = new StringBuilder();
+//        for (char ch : squareMove.toCharArray()) {
+//            if (Character.isLetter(ch)) {
+//                letter = ch; // e.g. f
+//            } else {
+//                if (Character.isDigit(ch)) digitBuilder.append(ch);
+//            }
+//        }
+//        int digit = Integer.parseInt(digitBuilder.toString()); // e.g. 16
+//
+//        boolean moveInBound;
+//        String moveDirection = getSquareMoveDirection(squareMove);
+//        // if move direction is rightward, check if the letter will be in bound*
+//        // if move direction is downward, check if the digit will be in bound*
+//        // *with consideration of the length of travel
+//        if (moveDirection.equals("RIGHTWARD")) {
+//            moveInBound = ((letter + lengthOfTravel - 1) < 'a' + gb.getGameBoardSize());
+//        } else {
+//            moveInBound = (digit + lengthOfTravel - 1 <= gb.getGameBoardSize());
+//        }
+//
+//        if (moveInBound) {
+//            this.currentMove = new Move(moveDirection, wordMove, letter, digit, lengthOfTravel);
+//            Square startSquare = this.getCurrentMove().getStartSquare(gb);
+//            if (startSquare.isSquareOccupied()) {
+//                System.out.println("Illegal move, the first tile cannot be placed on an occupied square");
+//                return false;
+//            }
+//            return true;
+//        }
+//
+//        System.out.println("Illegal move, move result out of bounds");
+//        return false;
+//    }
+
 }

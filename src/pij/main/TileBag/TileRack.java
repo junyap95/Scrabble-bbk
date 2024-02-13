@@ -7,14 +7,10 @@ import java.util.Random;
 
 public class TileRack {
     public final int TILE_RACK_CAPACITY = 7;
-    private List<Tile> playersRack = new ArrayList<>();
+    private List<Tile> playersTiles = new ArrayList<>();
     private TileBag tileBag; // pointer to the pool of tiles
 
-    public TileBag getTileBag() {
-        return tileBag;
-    }
-
-    public void setTileBag(TileBag tileBag) {
+    public TileRack(TileBag tileBag) {
         this.tileBag = tileBag;
     }
 
@@ -26,10 +22,10 @@ public class TileRack {
         // this is to allow for random tile allocation for every refill action
         List<String> setList = new ArrayList<>(tileMap.keySet());
         Random rand = new Random();
-        int numOfTilesToBeRefilled = TILE_RACK_CAPACITY - this.playersRack.size();
+        int numOfTilesToBeRefilled = TILE_RACK_CAPACITY - this.playersTiles.size();
 
         // the loop will refill 'missing tiles' from the rack of capacity 7
-        // e.g. during round 1, playersRack.size() is 0, so the loop will run (7-0) times
+        // e.g. during round 1, playersTiles.size() is 0, so the loop will run (7-0) times
         // e.g. assume a player played 3 tiles in a round, his playerRack.size() becomes 4
         // e.g. in the next round, the loop will run (7-4) times, refilling 3 tiles for him
         for (int i = 0; i < numOfTilesToBeRefilled; i++) {
@@ -42,7 +38,7 @@ public class TileRack {
 
             // updating the tile pool
             if (tileMap.containsKey(tileString)) {
-                this.playersRack.add(new Tile(tileString, tileScore));
+                this.playersTiles.add(new Tile(tileString, tileScore));
                 // the tile added to the player's rack will be 'deducted' from the pool, i.e. updated tile count
                 int tileCount = (tileMap.get(tileString)) - 1;
                 // if all of this specific tile are taken (value in pool is 0 after 'deduction'), remove this tile from the pool map
@@ -57,18 +53,17 @@ public class TileRack {
         }
     }
 
-    public List<Tile> getPlayersRack() {
-        return playersRack;
+    public List<Tile> getPlayersTiles() {
+        return playersTiles;
     }
 
-
-    public void printUserRack() {
-        System.out.println(this.playersRack);
+    public List<String> getPlayersTilesAsLetters(){
+        return this.getPlayersTiles().stream().map(Tile::getDisplayAsLetter).toList();
     }
 
     @Override
     public String toString() {
         // returns the player's rack without the [] enclosing the tiles
-        return this.playersRack.toString().substring(1, this.playersRack.toString().length() - 1);
+        return this.playersTiles.toString().substring(1, this.playersTiles.toString().length() - 1);
     }
 }

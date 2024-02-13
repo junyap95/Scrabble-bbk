@@ -3,18 +3,17 @@ package pij.main.Players;
 import pij.main.GameRunner.GameTextPrinter;
 import pij.main.GameRunner.MoveValidator;
 import pij.main.TileBag.Tile;
+import pij.main.TileBag.TileBag;
 import pij.main.TileBag.TileRack;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class HumanPlayer implements Player{
-    private int playerScore = 0;
+public class HumanPlayer extends Player{
 
-    @Override
-    public int getPlayerScore() {
-        return playerScore;
+    public HumanPlayer(TileBag tileBag) {
+        super(tileBag);
     }
 
     @Override
@@ -22,11 +21,6 @@ public class HumanPlayer implements Player{
         GameTextPrinter.printPlayersMoveInstruction();
         Scanner scanner = new Scanner(System.in);
         return scanner.nextLine();
-    }
-
-    @Override
-    public void updateScore(int playerScore) {
-        this.playerScore += playerScore;
     }
 
 }

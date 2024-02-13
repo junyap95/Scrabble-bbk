@@ -1,19 +1,16 @@
 package pij.main.Players;
 
-public class ComputerPlayer implements Player {
+import pij.main.TileBag.TileBag;
+import pij.main.TileBag.TileRack;
+
+public class ComputerPlayer extends Player {
+
+    public ComputerPlayer(TileBag tileBag) {
+        super(tileBag);
+    }
 
     @Override
     public String move() {
         return ",";
-    }
-
-    @Override
-    public int getPlayerScore() {
-        return 0;
-    }
-
-    @Override
-    public void updateScore(int playerScore) {
-
     }
 }
