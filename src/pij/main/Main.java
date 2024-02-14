@@ -27,7 +27,7 @@ public class Main {
 
             if(isHumanPlayer){
                 if (gameCounters.isGameOpen()) {
-                    GameTextPrinter.printComputersRack(true);
+                    GameTextPrinter.printComputersRack();
                     System.out.println(gr.getComputerPlayer().getTileRack());
                 }
 
@@ -49,7 +49,7 @@ public class Main {
                 isMoveVerified = moveValidator.isMovePermitted(playerRack, gameCounters);
                 System.out.println("The move is: " + "   Word: " + moveValidator.getCurrentMove().getWordMove() + " at position " + moveValidator.getCurrentMove().getSquareMove());
                 if (isMoveVerified) {
-                    gr.updateGameBoard(gameBoard, moveValidator.getCurrentMove(), playerRack);
+                    gr.updateGameBoard(moveValidator.getCurrentMove(), playerRack);
                     System.out.println("Human player score: " + humanPlayer.getPlayerScore());
                     System.out.println("Computer player score: " + computerPlayer.getPlayerScore() + "\n");
                     gameCounters.refreshPassCounter();
