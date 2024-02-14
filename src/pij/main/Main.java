@@ -44,19 +44,24 @@ public class Main {
                     break;
                 }
                 // TODO: pass these in moveIsVerified function
-                MoveValidator moveValidator = new MoveValidator(playersMove, gameBoard);
+                MoveValidator moveValidator = new MoveValidator(playersMove, gameBoard); // new unverified move created here
 
-                System.out.println(isMoveVerified + " b4");
                 isMoveVerified = moveValidator.isMovePermitted(playerRack, gameCounters);
-                System.out.println(isMoveVerified + " after");
-                if (isMoveVerified) gr.updateGameBoard(gameBoard, moveValidator.getCurrentMove());
+                System.out.println("The move is: " + "   Word: " + moveValidator.getCurrentMove().getWordMove() + " at position " + moveValidator.getCurrentMove().getSquareMove());
+                if (isMoveVerified) {
+                    gr.updateGameBoard(gameBoard, moveValidator.getCurrentMove(), playerRack);
+                    System.out.println("Human player score: " + humanPlayer.getPlayerScore());
+                    System.out.println("Computer player score: " + computerPlayer.getPlayerScore() + "\n");
+                    gameCounters.refreshPassCounter();
+                    gameBoard.printGameBoard();
+                }
             }
 
             gameCounters.incrementRoundCounter();
             isHumanPlayer = !isHumanPlayer;
         }
 
-        //        scanner.close();
+//                scanner.close();
 
     }
 

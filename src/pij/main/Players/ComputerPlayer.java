@@ -1,7 +1,6 @@
 package pij.main.Players;
 
 import pij.main.TileBag.TileBag;
-import pij.main.TileBag.TileRack;
 
 public class ComputerPlayer extends Player {
 

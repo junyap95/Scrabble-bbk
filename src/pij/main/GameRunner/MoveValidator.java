@@ -3,11 +3,8 @@ package pij.main.GameRunner;
 import pij.main.FileReader.FileProcessor;
 import pij.main.GameBoard.GameBoard;
 import pij.main.Square.Square;
-import pij.main.TileBag.Tile;
 import pij.main.TileBag.TileRack;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -22,25 +19,46 @@ public class MoveValidator {
     public MoveValidator(String moveString, GameBoard gameBoard) {
         this.moveString = moveString;
         this.gameBoard = gameBoard;
-        this.currentMove = isMoveSplittable() ? new Move(this.moveString) : null;
+        this.currentMove = this.createMove();
     }
 
     // constructor helper method - for new Move creation
-    public boolean isMoveSplittable() {
+    public Move createMove() {
         String move = this.moveString;
         // the bare minimum requirement for a string must include one comma
         if (!move.contains(",")) {
             GameTextPrinter.printIllegalMoveFormat();
-            return false;
+            return null;
         }
 
         // if not 2-part splitting, there are >1 comma included
         if (move.split(",").length != 2 && !move.equals(",")) {
             GameTextPrinter.printIllegalMoveFormat();
-            return false;
+            return null;
         }
 
-        return true;
+        String wordMove = moveString.split(",")[0];
+        String squareMove = moveString.split(",")[1];
+
+        char letter = '_'; // '_' is a dummy to be replaced
+        StringBuilder digitBuilder = new StringBuilder();
+        boolean hasDigit = false;
+        boolean hasLetter = false;
+        for (char ch : squareMove.toCharArray()) {
+            if (Character.isLetter(ch)) {
+                hasLetter = true;
+                letter = ch; // e.g. f
+            } else {
+                hasDigit = true;
+                digitBuilder.append(ch);
+            }
+        }
+        if(!hasLetter || !hasDigit) return null;
+        int digit = Integer.parseInt(digitBuilder.toString());
+        if(digit <= gameBoard.getGameBoardSize() && letter < 'a' + gameBoard.getGameBoardSize() ) {
+            return new Move(wordMove, squareMove, digit, letter);
+        }
+        return null;
     }
 
     public Move getCurrentMove() {
@@ -49,7 +67,10 @@ public class MoveValidator {
 
     // check 1 - format
     public boolean isMoveFormatLegal() {
-        if(this.currentMove == null) return false;
+        if(this.currentMove == null) {
+            GameTextPrinter.printIllegalMoveFormat();
+            return false;
+        }
         if(this.currentMove.isPass) return true;
 
         String wordMove = this.currentMove.getWordMove(); // i.e. "HI"
@@ -92,10 +113,7 @@ public class MoveValidator {
         // obtain a list of only the letters of a tile (excluding score)
         List<String> listOfLettersFromRack = new ArrayList<>(tileRack.getPlayersTilesAsLetters());
 
-        System.out.println(listOfLettersFromRack);
-
         String[] wordMove = this.currentMove.getWordMove().split(""); // [H, I]
-        System.out.println(Arrays.toString(wordMove));
 
         for (String s : wordMove) {
             // lowercase letter is to check for wildcard in rack
@@ -131,34 +149,43 @@ public class MoveValidator {
         if(this.currentMove == null || this.currentMove.isPass()) return false;
 
         String wordFormedFromMove = this.getCurrentMove().getWordFormed(this.gameBoard);
+        if(wordFormedFromMove == null) return false;
         Square centreSquare = this.gameBoard.getCentreSquare(); // needed for first round
         String direction = this.currentMove.getMoveDirection();
         List<Square> listOfSquaresToBeOccupied = this.currentMove.getListOfSquaresToBeOccupied();
 
-        System.out.println("2nd round word formed" + wordFormedFromMove);
         // in first round only
         if (gameCounters.getRoundCounter() == 1) return this.moveContainsCentreSquare(listOfSquaresToBeOccupied, centreSquare);
 
-//        // round 2 onwards
-//        boolean sharedSquare= false;
-//        for (Square sq : moveList) {
-//            if(direction.equals("RIGHTWARD")){
-//
-//            }
-//
-//            if (sq.isSquareOccupied()) {
-//                sharedSquare = true;
-//                break;
-//            }
-//        }
-//
-//        boolean nextToParallelWord = false;
-//        boolean isWordChecked = false;
-//        StringBuilder front = new StringBuilder();
-//        StringBuilder back = new StringBuilder();
-//        int k = 0;
-//        System.out.println("No Overlap");
-        return true;// if no overlap of at least 1 square
+        // round 2 onwards
+        // first check all squares to be occupied, at least one of them has to have one neighbour
+        boolean sharedSquare= false;
+        for (Square sq : listOfSquaresToBeOccupied) {
+            // single square case
+            if(listOfSquaresToBeOccupied.size() == 1) {
+                if(sq.hasNoNeighbour()) return false;
+                if(sq.hasTopBottomNeighbour()) this.currentMove.setMoveDirectionDown();
+                if(sq.hasLeftRightNeighbour()) this.currentMove.setMoveDirectionRight();
+            }
+            if(direction.equals("RIGHTWARD") && (sq.hasTopBottomNeighbour())){
+                GameTextPrinter.printWordPermittedAtPosition(this.currentMove.getWordMove(), this.currentMove.getSquareMove());
+                return false;
+            }
+            if(direction.equals("DOWNWARD") && (sq.hasLeftRightNeighbour())){
+                GameTextPrinter.printWordPermittedAtPosition(this.currentMove.getWordMove(), this.currentMove.getSquareMove());
+                System.out.println("down move cannot have left right neighbour");
+                return false;
+            }
+            if(direction.equals("RIGHTWARD") && (sq.hasLeftRightNeighbour())){
+                System.out.println("right move has left right neighbour");
+                sharedSquare = true;
+            }
+            if(direction.equals("DOWNWARD") && (sq.hasTopBottomNeighbour())){
+                System.out.println("down move has top btm neighbour");
+                sharedSquare = true;
+            }
+        }
+        return sharedSquare && FileProcessor.wordListProcessor(wordFormedFromMove);
     }
 
     // helper method (for first move of the game) - check if moves contain centre square, and forms a legit word

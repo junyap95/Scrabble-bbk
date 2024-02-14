@@ -23,7 +23,9 @@ public class GameRunner {
     private boolean isGameOver = false;
 
     // constructor - initialises a new game
-    public GameRunner() { this.initNewGame(); }
+    public GameRunner() {
+        this.initNewGame();
+    }
 
     // method - initialises game items, counters, players
     private void initNewGame() {
@@ -69,18 +71,16 @@ public class GameRunner {
     // 2. check if the word formed is parallel to any existing word on the board. e.g. does the new word 'touch' in the same direction
 
 
-
-
     // update the display of the game board
     // update the square status to 'occupied'
-    public void updateGameBoard(GameBoard gb, Move move) {
+    // TODO: instead of passing move and tileRack, pass in the List needed instead?
+    public void updateGameBoard(Move move, TileRack tileRack) {
         List<String> wordMoveList = move.getWordMoveList(); // ["D", "O", "G"]
-        List<Tile> playerRack = this.getHumanPlayer().getTileRack().getPlayersTiles(); // 7 existing tiles
-        List<String> stringToBePlacedOnBoard = new ArrayList<>(); // D2, O1, G2
+        List<Tile> playerRack = tileRack.getPlayersTiles(); // 7 existing tiles
+
         List<Tile> tileToBeSetOnSquare = new ArrayList<>();
         List<Square> squaresToBeOccupied = move.getListOfSquaresToBeOccupied();
-        int x = move.getStartSquareX();
-        int y = move.getStartSquareY();
+        List<Square> occupiedSquares = move.getListOfOccupiedSquares();
 
         // for every letter in wordMoveList, loop through each tile in player's rack
         // check if there tile's letter value equals to it
@@ -90,50 +90,38 @@ public class GameRunner {
             boolean charIsLowerCase = Character.isLowerCase(s.charAt(0));
             for (Tile tile : playerRack) {
                 if (charIsLowerCase && tile.getDisplayAsLetter().equals("_")) {
-                    stringToBePlacedOnBoard.add(tile.getDisplayOnBoard().replace("_", s));
+                    String wildCardNewDisplay = tile.getDisplayOnBoard().replace("_", s);
+                    tile.setDisplayOnBoard(wildCardNewDisplay);
                     tileToBeSetOnSquare.add(tile);
                     playerRack.remove(tile);
                     break;
                 }
 
                 if (s.equals(tile.getDisplayAsLetter())) {
-                    stringToBePlacedOnBoard.add(tile.getDisplayOnBoard());
                     tileToBeSetOnSquare.add(tile);
                     playerRack.remove(tile);
                     break;
                 }
             }
         }
-        // depending on the move direction, update the display of the square
-        // and set the Tile object to the corresponding square on board
-        for (int i = 0; i < wordMoveList.size(); i++) {
-            int stringSize = stringToBePlacedOnBoard.get(i).length();
 
-            if (move.getMoveDirection().equals("RIGHTWARD")) {
-                gb.getSquareByIndex(x, y + i).setSquareDisplayOnBoard(stringSize > 2 ? stringToBePlacedOnBoard.get(i) : stringToBePlacedOnBoard.get(i) + " ");
-                this.setTileOnSquare(gb, tileToBeSetOnSquare, x, y, i);
-            } else {
-                gb.getSquareByIndex(x + i, y).setSquareDisplayOnBoard(stringSize > 2 ? stringToBePlacedOnBoard.get(i) : stringToBePlacedOnBoard.get(i) + " ");
-                this.setTileOnSquare(gb, tileToBeSetOnSquare, x, y, i);
-            }
-
+        for (int i = 0; i < squaresToBeOccupied.size(); i++) {
+            squaresToBeOccupied.get(i).setTileOnSquare(tileToBeSetOnSquare.get(i));
         }
-        gb.printGameBoard();
         // refills tile rack once everything operation is done
         this.getHumanPlayer().getTileRack().refillUserRack();
-        this.updatePlayerScore(this.calculateScore(tileToBeSetOnSquare, squaresToBeOccupied));
-    }
-
-    // helper method - reduces duplication
-    private void setTileOnSquare(GameBoard gb, List<Tile> tileToBeSetOnSquare, int x, int y, int i) {
-        gb.getSquareByIndex(x, y + i).setTileOnSquare(tileToBeSetOnSquare.get(i));
+        this.updatePlayerScore(this.calculateScore(tileToBeSetOnSquare, squaresToBeOccupied, occupiedSquares));
     }
 
     // helper methods for score calculations and update
-    private int calculateScore(List<Tile> tileToBeSetOnSquare, List<Square> squaresToBeOccupied) {
+    private int calculateScore(List<Tile> tileToBeSetOnSquare, List<Square> squaresToBeOccupied, List<Square> listOfOccupiedSquares) {
         int result = 0;
         int premiumWordCumulative = 1;
         boolean hasPremiumWord = false;
+
+        for(Square square : listOfOccupiedSquares) {
+            result += square.getTileOnSquare().getTileScore();
+        }
 
         for (int i = 0; i < squaresToBeOccupied.size(); i++) {
             Square currentSquare = squaresToBeOccupied.get(i);
@@ -160,11 +148,18 @@ public class GameRunner {
     }
 
     //getters
-    public GameItems getGameItems() { return gameItems; }
-    public GameCounters getGameCounters() { return gameCounters; }
+    public GameItems getGameItems() {
+        return gameItems;
+    }
+
+    public GameCounters getGameCounters() {
+        return gameCounters;
+    }
+
     public HumanPlayer getHumanPlayer() {
         return humanPlayer;
     }
+
     public Player getComputerPlayer() {
         return computerPlayer;
     }

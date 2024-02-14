@@ -38,7 +38,15 @@ public class SquareNeighbours {
         this.rightNeighbour = rightNeighbour;
     }
 
-    public void printNeighbours() {
-        System.out.println("SquareNeighbours{" + "topNeighbour=" + topNeighbour + ", bottomNeighbour=" + bottomNeighbour + ", leftNeighbour=" + leftNeighbour + ", rightNeighbour=" + rightNeighbour + '}');
+    public boolean hasTopBottomNeighbour() {
+        return this.getTopNeighbour().isSquareOccupied() || this.getBottomNeighbour().isSquareOccupied();
+    }
+
+    public boolean hasLeftRightNeighbour() {
+        return this.getLeftNeighbour().isSquareOccupied() || this.getRightNeighbour().isSquareOccupied();
+    }
+
+    public boolean hasNoNeighbour() {
+        return !this.getTopNeighbour().isSquareOccupied() && !this.getBottomNeighbour().isSquareOccupied() && !this.getLeftNeighbour().isSquareOccupied() && !this.getRightNeighbour().isSquareOccupied();
     }
 }

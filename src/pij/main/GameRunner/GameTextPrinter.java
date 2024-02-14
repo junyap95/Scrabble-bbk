@@ -18,11 +18,12 @@ public class GameTextPrinter {
     }
 
     public static void printPlayersMoveInstruction(){
-        System.out.println("Please enter your move in the format: \"word,square\" (without the quotes) " + "\n"
-                           + "For example, for suitable tile rack and board configuration, a downward move could be \"HI,f4\" and a rightward move could be \"HI,4f\"."
-                           + "\n\n" + "In the word, upper-case letters are standard tiles"
-                           + "and lower-case letters are wildcards."
-                           + "\n" + "Entering \",\" passes the turn.");
+        System.out.println("""
+                Please enter your move in the format: "word,square" (without the quotes)\s
+                For example, for suitable tile rack and board configuration, a downward move could be "HI,f4" and a rightward move could be "HI,4f".
+
+                In the word, upper-case letters are standard tilesand lower-case letters are wildcards.
+                Entering "," passes the turn.""");
     }
 
     public static void printLoadBoard(){
@@ -33,7 +34,7 @@ public class GameTextPrinter {
         System.out.println("Would you like to play an _o_pen or a _c_losed game?" + "\n" + "Please enter your choice (o/c): ");
     }
 
-    public static void printComputersRack(boolean isGameOpen){
+    public static void printComputersRack(){
         String openGame = "OPEN GAME: The computer's tiles:";
         System.out.println(openGame);
 //        String closeGame = "CLOSED GAME: The computer's tiles are not shown";
@@ -49,5 +50,9 @@ public class GameTextPrinter {
 
     public static void printTilesNotInRack(TileRack t, String s){
         System.out.println("With tiles " + t + " you cannot play word " + s);
+    }
+
+    public static void printWordPermittedAtPosition (String word, String position) {
+        System.out.println("The board does not permit word " + word + " at position " + position + ". Please try again.");
     }
 }

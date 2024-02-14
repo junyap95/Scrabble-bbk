@@ -6,6 +6,11 @@ public class Square extends SquareNeighbours{
     private SquareType squareType;
     private String squareDisplayOnBoard;
     private Integer squareScore;
+
+    public void setSquareOccupied() {
+        isSquareOccupied = true;
+    }
+
     private boolean isSquareOccupied;
     private Tile tileOnSquare;
 
@@ -20,10 +25,6 @@ public class Square extends SquareNeighbours{
         return squareType;
     }
 
-    public String getSquareDisplayOnBoard() {
-        return squareDisplayOnBoard;
-    }
-
     public Integer getSquareScore() {
         return squareScore;
     }
@@ -36,21 +37,18 @@ public class Square extends SquareNeighbours{
         return isSquareOccupied;
     }
 
-    public void setSquareDisplayOnBoard(String squareDisplayOnBoard) {
-        this.squareDisplayOnBoard = squareDisplayOnBoard;
-        this.isSquareOccupied = true;
-    }
-
     public void setTileOnSquare(Tile tileOnSquare) {
         this.tileOnSquare = tileOnSquare;
-    }
-
-    public void setSquareOccupied() {
-        isSquareOccupied = true;
+        this.isSquareOccupied = true;
     }
 
     @Override
     public String toString() {
+        if (this.isSquareOccupied) {
+            String tileDisplay = this.tileOnSquare.getDisplayOnBoard();
+            return tileDisplay.length() > 2 ? tileDisplay : tileDisplay + " ";
+        }
         return this.squareDisplayOnBoard;
+        // return this.squareDisplayOnBoard;
     }
 }

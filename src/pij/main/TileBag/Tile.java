@@ -2,9 +2,8 @@ package pij.main.TileBag;
 
 public class Tile {
     private final int tileScore;
-    private final String displayOnBoard;
-    private final String displayAsLetter;
-    private String tileType = "STANDARD";
+    private String displayOnBoard;
+    private String displayAsLetter;
 
     public Tile(String displayOnBoard, int tileScore){
         this.displayOnBoard = displayOnBoard;
@@ -12,8 +11,8 @@ public class Tile {
         this.displayAsLetter = displayOnBoard.substring(0,1);
     }
 
-    public String getTileType() {
-        return tileType;
+    public void setDisplayOnBoard(String displayOnBoard) {
+        this.displayOnBoard = displayOnBoard;
     }
 
     public String getDisplayOnBoard() {
