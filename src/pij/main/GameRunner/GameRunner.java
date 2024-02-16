@@ -21,6 +21,7 @@ public class GameRunner {
     private Player computerPlayer;
     private GameCounters gameCounters;
     private boolean isGameOver = false;
+    private List<String> wordsAlreadyPlayed;
 
     // constructor - initialises a new game
     public GameRunner() {
@@ -36,6 +37,7 @@ public class GameRunner {
         this.humanPlayer = new HumanPlayer(this.getGameItems().getTileBag()); // new player and tile rack
         this.computerPlayer = new ComputerPlayer(this.getGameItems().getTileBag()); // new player and tile rack
         this.gameCounters = new GameCounters();
+        this.wordsAlreadyPlayed = new ArrayList<>();
     }
 
     public void loadResources(GameBoard gameBoard) {
@@ -74,7 +76,7 @@ public class GameRunner {
     // update the display of the game board
     // update the square status to 'occupied'
     // TODO: instead of passing move and tileRack, pass in the List needed instead?
-    public void updateGameBoard(Move move, TileRack tileRack) {
+    public void updateGameBoard(Move move, TileRack tileRack, Player player) {
         List<String> wordMoveList = move.getWordMoveList(); // ["D", "O", "G"]
         List<Tile> playerRack = tileRack.getPlayersTiles(); // 7 existing tiles
 
@@ -109,8 +111,8 @@ public class GameRunner {
             squaresToBeOccupied.get(i).setTileOnSquare(tileToBeSetOnSquare.get(i));
         }
         // refills tile rack once everything operation is done
-        this.getHumanPlayer().getTileRack().refillUserRack();
-        this.updatePlayerScore(this.calculateScore(tileToBeSetOnSquare, squaresToBeOccupied, occupiedSquares));
+        player.getTileRack().refillUserRack();
+        this.updatePlayerScore(this.calculateScore(tileToBeSetOnSquare, squaresToBeOccupied, occupiedSquares), player);
     }
 
     // helper methods for score calculations and update
@@ -143,8 +145,8 @@ public class GameRunner {
         return result;
     }
 
-    private void updatePlayerScore(int score) {
-        this.getHumanPlayer().updateScore(score);
+    private void updatePlayerScore(int score, Player player) {
+        player.updateScore(score);
     }
 
     //getters

@@ -23,4 +23,9 @@ public class HumanPlayer extends Player{
         return scanner.nextLine();
     }
 
+    @Override
+    public String toString() {
+        return "I am a Human Player";
+    }
+
 }

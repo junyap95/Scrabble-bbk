@@ -42,6 +42,17 @@ public class GameBoard {
         this.gameBoardSize = gameBoardSize;
     }
 
+    public boolean isGameBoardEmpty() {
+        for(List<Square> ls : this.allSquaresOnBoard) {
+            for(Square square : ls) {
+                if (square.isSquareOccupied()) {
+                    return false; //if at least one square is occupied
+                }
+            }
+        }
+        return true;
+    }
+
     public void printGameBoard() {
         List<List<Square>> allSquaresOnBoard = this.getAllSquaresOnBoard();
         int yAxis = 1;

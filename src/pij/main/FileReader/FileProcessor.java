@@ -12,6 +12,7 @@ import pij.main.Square.*;
 
 public class FileProcessor {
     private static Set<String> wordSet = new HashSet<>();
+    private static List<String> wordAlreadyPlayed = new ArrayList<>();
 
     // helper function to create display string for a square
     private static String squareToDisplay(String line, int index) {
@@ -27,6 +28,10 @@ public class FileProcessor {
         return Integer.parseInt(subStr);
     }
 
+    public static void addToWordAlreadyPlayed(String word) {
+        wordAlreadyPlayed.add(word);
+    }
+
 
     public static void loadWordList() {
         try (BufferedReader reader = new BufferedReader(new FileReader("resources/wordlist.txt"))) {
@@ -40,25 +45,18 @@ public class FileProcessor {
     }
 
     public static boolean wordListProcessor(String wordPlayed) {
+        if(wordAlreadyPlayed.contains(wordPlayed)) {
+            System.out.println(wordPlayed +  " is already played once on board!");
+            return false;
+        }
+
         if(wordSet.contains(wordPlayed.toLowerCase())) {
+            System.out.println("word exists");
             return true;
         }
-        System.out.println(wordPlayed +  " is not in word list.");
+        System.out.println(wordPlayed +  " is not a valid word.");
         return false;
     }
-
-//    public static boolean wordListProcessor(String wordPlayed) {
-//        try (BufferedReader reader = new BufferedReader(new FileReader("resources/wordlist.txt"))) {
-//            for(String currentWord = reader.readLine(); currentWord != null; currentWord = reader.readLine()) {
-//                if(wordPlayed.equalsIgnoreCase(currentWord)) return true;
-//            }
-//            return false;
-//
-//
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
 
     public static void boardProcessor(GameBoard gameBoard, String fileName) {
         // reads the file

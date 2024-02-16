@@ -22,7 +22,7 @@ public class GameTextPrinter {
                 Please enter your move in the format: "word,square" (without the quotes)\s
                 For example, for suitable tile rack and board configuration, a downward move could be "HI,f4" and a rightward move could be "HI,4f".
 
-                In the word, upper-case letters are standard tilesand lower-case letters are wildcards.
+                In the word, upper-case letters are standard tiles and lower-case letters are wildcards.
                 Entering "," passes the turn.""");
     }
 
@@ -52,7 +52,7 @@ public class GameTextPrinter {
         System.out.println("With tiles " + t + " you cannot play word " + s);
     }
 
-    public static void printWordPermittedAtPosition (String word, String position) {
-        System.out.println("The board does not permit word " + word + " at position " + position + ". Please try again.");
+    public static void printWordPermittedAtPosition (Move move) {
+        System.out.println("The board does not permit word " + move.getWordMove() + " at position " + move.getSquareMove() + ". Please try again.");
     }
 }

@@ -1,5 +1,6 @@
 package pij.main;
 
+import pij.main.FileReader.FileProcessor;
 import pij.main.GameBoard.GameBoard;
 import pij.main.GameRunner.GameCounters;
 import pij.main.GameRunner.GameRunner;
@@ -22,6 +23,8 @@ public class Main {
 
         while(!gr.isGameOver()){
             Player currentPlayer = isHumanPlayer? humanPlayer : computerPlayer;
+            System.out.println("round " + gameCounters.getRoundCounter());
+            System.out.println("which player now? " + currentPlayer);
             TileRack playerRack = isHumanPlayer ? gr.getHumanPlayer().getTileRack() : gr.getComputerPlayer().getTileRack();
             gr.refillTileRacks();
 
@@ -45,11 +48,11 @@ public class Main {
                 }
                 // TODO: pass these in moveIsVerified function
                 MoveValidator moveValidator = new MoveValidator(playersMove, gameBoard); // new unverified move created here
-
                 isMoveVerified = moveValidator.isMovePermitted(playerRack, gameCounters);
-                System.out.println("The move is: " + "   Word: " + moveValidator.getCurrentMove().getWordMove() + " at position " + moveValidator.getCurrentMove().getSquareMove());
                 if (isMoveVerified) {
-                    gr.updateGameBoard(moveValidator.getCurrentMove(), playerRack);
+                    System.out.println("The move is: " + "   Word: " + moveValidator.getCurrentMove().getWordMove() + " at position " + moveValidator.getCurrentMove().getSquareMove());
+                    FileProcessor.addToWordAlreadyPlayed(moveValidator.getCurrentMove().getWordFormed());
+                    gr.updateGameBoard(moveValidator.getCurrentMove(), playerRack, currentPlayer);
                     System.out.println("Human player score: " + humanPlayer.getPlayerScore());
                     System.out.println("Computer player score: " + computerPlayer.getPlayerScore() + "\n");
                     gameCounters.refreshPassCounter();

@@ -2,7 +2,7 @@ package pij.main.Square;
 
 import pij.main.TileBag.Tile;
 
-public class Square extends SquareNeighbours{
+public class Square extends SquareNeighbours {
     private SquareType squareType;
     private String squareDisplayOnBoard;
     private Integer squareScore;
@@ -42,7 +42,6 @@ public class Square extends SquareNeighbours{
         this.isSquareOccupied = true;
     }
 
-    @Override
     public String toString() {
         if (this.isSquareOccupied) {
             String tileDisplay = this.tileOnSquare.getDisplayOnBoard();
