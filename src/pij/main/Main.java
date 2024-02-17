@@ -46,9 +46,9 @@ public class Main {
                     gameCounters.incrementPassCounter();
                     break;
                 }
-                // TODO: pass these in moveIsVerified function
+
                 MoveValidator moveValidator = new MoveValidator(playersMove, gameBoard); // new unverified move created here
-                isMoveVerified = moveValidator.isMovePermitted(playerRack, gameCounters);
+                isMoveVerified = moveValidator.isMovePermitted(playerRack, gameCounters.getRoundCounter() == 1);
                 if (isMoveVerified) {
                     System.out.println("The move is: " + "   Word: " + moveValidator.getCurrentMove().getWordMove() + " at position " + moveValidator.getCurrentMove().getSquareMove());
                     FileProcessor.addToWordAlreadyPlayed(moveValidator.getCurrentMove().getWordFormed());
@@ -63,6 +63,12 @@ public class Main {
             gameCounters.incrementRoundCounter();
             isHumanPlayer = !isHumanPlayer;
         }
+        System.out.println("Game Over!");
+        System.out.println("The human player scored " + humanPlayer.getPlayerScore());
+        System.out.println("The computer player scored " + computerPlayer.getPlayerScore());
+        System.out.println(humanPlayer.getPlayerScore() > computerPlayer.getPlayerScore() ?
+                            "The human player wins! " : "The computer player wins!");
+
 
 //                scanner.close();
 

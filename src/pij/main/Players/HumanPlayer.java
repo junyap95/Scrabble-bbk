@@ -25,7 +25,8 @@ public class HumanPlayer extends Player{
 
     @Override
     public String toString() {
-        return "I am a Human Player";
+        return "I am a Human Player, my current score is: "
+                + this.getPlayerScore();
     }
 
 }

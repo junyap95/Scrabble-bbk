@@ -35,7 +35,7 @@ public class GameRunner {
         this.gameItems = new GameItems(); // new gameBoard and new tileBag
         this.loadResources(getGameItems().getGameBoard()); // reads word list and board txt files
         this.humanPlayer = new HumanPlayer(this.getGameItems().getTileBag()); // new player and tile rack
-        this.computerPlayer = new ComputerPlayer(this.getGameItems().getTileBag()); // new player and tile rack
+        this.computerPlayer = new ComputerPlayer(this.getGameItems().getTileBag(), this.gameItems.getGameBoard()); // new player and tile rack
         this.gameCounters = new GameCounters();
         this.wordsAlreadyPlayed = new ArrayList<>();
     }

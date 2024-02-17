@@ -3,10 +3,7 @@ package pij.main.FileReader;
 import pij.main.GameBoard.GameBoard;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import pij.main.Square.*;
 
@@ -56,6 +53,44 @@ public class FileProcessor {
         }
         System.out.println(wordPlayed +  " is not a valid word.");
         return false;
+    }
+
+
+    public static List<String> possibleWordsGenerator(String string) {
+        // generate map from player tiles and occupied squares' letters
+        Map<Character, Integer> playersLetters = lettersToMap(string.toLowerCase());
+        List<String> possibleWords = new ArrayList<>();
+        for(String s : wordSet) {
+            Map<Character, Integer> wordFromSet = lettersToMap(s);
+            boolean canGenerateWord = true;
+            for (Character character : wordFromSet.keySet()) {
+                int currentWordCharCount = wordFromSet.get(character);
+                int lettersCharCount = playersLetters.containsKey(character) ?
+                        playersLetters.get(character) : 0;
+                if(currentWordCharCount > lettersCharCount) {
+                    canGenerateWord = false;
+                    break;
+                }
+            }
+            if(canGenerateWord) {
+                possibleWords.add(s);
+            }
+        }
+        System.out.println("Possible words are: " + possibleWords);
+        return possibleWords;
+    }
+
+    // helper methods - for possibleWordsGenerator
+    private static Map<Character, Integer> lettersToMap(String string) {
+        Map<Character, Integer> lettersCountMap = new HashMap<>();
+        for (int i = 0; i < string.length(); i++) {
+            char currentChar = string.charAt(i);
+
+            int count = lettersCountMap.getOrDefault(currentChar, 0);
+
+            lettersCountMap.put(currentChar, count + 1);
+        }
+        return lettersCountMap;
     }
 
     public static void boardProcessor(GameBoard gameBoard, String fileName) {

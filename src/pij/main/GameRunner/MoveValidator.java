@@ -163,11 +163,11 @@ public class MoveValidator {
         return true;
     }
 
-    public boolean isMovePermitted(TileRack playerRack, GameCounters gameCounters) {
-        return isMoveFormatLegal() && rackContainsMove(playerRack) && isMovePlayableOnBoard(gameCounters);
+    public boolean isMovePermitted(TileRack playerRack, boolean isFirstRound) {
+        return isMoveFormatLegal() && rackContainsMove(playerRack) && isMovePlayableOnBoard(isFirstRound);
     }
 
-    public boolean isMovePlayableOnBoard(GameCounters gameCounters) {
+    public boolean isMovePlayableOnBoard(boolean isFirstRound) {
         if (this.currentMove == null || this.currentMove.isPass() || this.currentMove.getWordFormed() == null) {
             GameTextPrinter.printIllegalMoveFormat();
             return false;
@@ -177,9 +177,9 @@ public class MoveValidator {
         String direction = this.currentMove.getMoveDirection();
         Square centreSquare = this.gameBoard.getCentreSquare(); // needed for first round
 
-        //         in first round only
-        if (gameCounters.getRoundCounter() == 1 || this.gameBoard.isGameBoardEmpty())
-            return this.moveContainsCentreSquare(listOfPlayableSquares, centreSquare, gameCounters);
+        // in first round and if the board is still empty due to player passing round
+        if (isFirstRound || this.gameBoard.isGameBoardEmpty())
+            return this.moveContainsCentreSquare(listOfPlayableSquares, centreSquare, isFirstRound);
 
         boolean hasOverLap = false;
         for (Square sq : listOfPlayableSquares) {
@@ -207,159 +207,16 @@ public class MoveValidator {
         return hasOverLap && FileProcessor.wordListProcessor(wordFormedFromMove);
     }
 
-    //    public boolean isMovePlayableOnBoard(GameCounters gameCounters) {
-    //        if (this.currentMove == null || this.currentMove.isPass()) return false;
-    //
-    //        String wordFormedFromMove = this.getCurrentMove().getWordFormed(this.gameBoard);
-    //        if (wordFormedFromMove == null) return false;
-    //        Square centreSquare = this.gameBoard.getCentreSquare(); // needed for first round
-    //        String direction = this.currentMove.getMoveDirection();
-    //        List<Square> listOfSquaresToBeOccupied = this.currentMove.getListOfSquaresToBeOccupied();
-    //
-    //        // in first round only
-    //        if (gameCounters.getRoundCounter() == 1 || this.gameBoard.isGameBoardEmpty())
-    //            return this.moveContainsCentreSquare(listOfSquaresToBeOccupied, centreSquare, gameCounters);
-    //
-    //        // TODO overlap boolean
-    //        // round 2 onwards
-    //        // first check all squares to be occupied, at least one of them has to have one neighbour
-    //        boolean squareHasOverlap = false;
-    //        for (Square sq : listOfSquaresToBeOccupied) {
-    //            System.out.println("enter 188");
-    //            // single square case - if not on any edge
-    //            if (listOfSquaresToBeOccupied.size() == 1 && !sq.isSquareOnBoardEdge()) {
-    //                if (sq.hasTopOccupiedNeighbour() || sq.hasBtmOccupiedNeighbour()) {
-    //                    this.currentMove.setMoveDirectionDown();
-    //                } else if (sq.hasLeftOccupiedNeighbour() || sq.hasRightOccupiedNeighbour()){
-    //                    this.currentMove.setMoveDirectionRight();
-    //                } else {
-    //                    GameTextPrinter.printWordPermittedAtPosition(this.currentMove.getWordMove(), this.currentMove.getSquareMove());
-    //                    System.out.println("197");
-    //                    return false; // a single square that has 0 overlap
-    //                }
-    //            }
-    //
-    //            // squares that are not on L or R edge
-    //            if (direction.equals("RIGHTWARD") && !sq.isSquareOnLeftOrRightEdge()) {
-    //                // 1. it must have no adjacent top or btm occupied square
-    //                if(sq.hasTopOccupiedNeighbour() || sq.hasBtmOccupiedNeighbour()) {
-    //                    GameTextPrinter.printWordPermittedAtPosition(this.currentMove.getWordMove(), this.currentMove.getSquareMove());
-    //                    System.out.println("204");
-    //                    return false;
-    //                }
-    //                // check adjacent left OR right square, must find an occupied square
-    //                System.out.println("211");
-    //                if(sq.hasLeftOccupiedNeighbour() || sq.hasRightOccupiedNeighbour()) {
-    //                    squareHasOverlap = true;
-    //                }
-    //            }
-    //
-    //            // this would be the last square that touch the edge, otherwise it is not possible for a rightward move to have a square that touches right edge
-    //            if (direction.equals("RIGHTWARD") && sq.isSquareOnLeftOrRightEdge()) {
-    //                // 1. it must have no adjacent top or btm occupied square
-    //                if(sq.hasTopOccupiedNeighbour() || sq.hasBtmOccupiedNeighbour()) {
-    //                    GameTextPrinter.printWordPermittedAtPosition(this.currentMove.getWordMove(), this.currentMove.getSquareMove());
-    //                    System.out.println("216");
-    //                    return false;
-    //                }
-    //                // the only possible valid occupied neighbour for this square on edge is its left
-    //                System.out.println("220");
-    //                if (sq.hasLeftOccupiedNeighbour()){
-    //                    squareHasOverlap = true;
-    //                };
-    //            }
-    //
-    //            // squares that are not on T or B edge
-    //            if (direction.equals("DOWNWARD") && !sq.isSquareOnTopOrBottomEdge()) {
-    //                // 1. it must have no adjacent left or right occupied square
-    //                if(sq.hasLeftOccupiedNeighbour() || sq.hasRightOccupiedNeighbour()) {
-    //                    GameTextPrinter.printWordPermittedAtPosition(this.currentMove.getWordMove(), this.currentMove.getSquareMove());
-    //                    System.out.println("228");
-    //                    return false;
-    //                }
-    //                // check adjacent Top OR Btm square, must find an occupied square
-    //                System.out.println("232");
-    //                if(sq.hasTopOccupiedNeighbour() || sq.hasBtmOccupiedNeighbour()) {
-    //                    squareHasOverlap = true;
-    //                }
-    //            }
-    //
-    //            // this would be the last square that touch the edge, otherwise it is not possible for a rightward move to have a square that touches btm edge
-    //            if (direction.equals("DOWNWARD") && sq.isSquareOnLeftOrRightEdge()) {
-    //                // 1. it must have no adjacent left or right occupied square
-    //                if(sq.hasLeftOccupiedNeighbour() || sq.hasRightOccupiedNeighbour()) {
-    //                    GameTextPrinter.printWordPermittedAtPosition(this.currentMove.getWordMove(), this.currentMove.getSquareMove());
-    //                    System.out.println("242");
-    //                    return false;
-    //                }
-    //                // the only possible valid occupied neighbour for this square on edge is its top
-    //                System.out.println("246");
-    //                if(sq.hasTopOccupiedNeighbour()){
-    //                    squareHasOverlap = true;
-    //                }
-    //            }
-    //        }
-    //        System.out.println("playable true");
-    //
-    //        return squareHasOverlap && FileProcessor.wordListProcessor(wordFormedFromMove);
-    //    }
-
     // helper method (for first move of the game) - check if moves contain centre square, and forms a legit word
-    private boolean moveContainsCentreSquare(List<Square> moveList, Square centreSquare, GameCounters gameCounters) {
+    private boolean moveContainsCentreSquare(List<Square> moveList, Square centreSquare, boolean isFirstRound) {
         for (Square square : moveList) {
             if (square == centreSquare) {
                 // after checking centre square just check if word is in word list
                 return FileProcessor.wordListProcessor(currentMove.getWordMove());
             }
         }
-        System.out.println(gameCounters.getRoundCounter() == 1 ? "Illegal move. In the first round, one of your tiles must be placed on the centre square in the first round." : "As the board is currently empty, one of your tiles must be placed on the centre square.");
+        System.out.println(isFirstRound ? "Illegal move. In the first round, one of your tiles must be placed on the centre square in the first round." : "As the board is currently empty, one of your tiles must be placed on the centre square.");
         return false; // if the loop finished - the moveList does not contain centre square - invalid move
     }
-
-
-    // check 3 - move in board's boundary of S*S
-    //    public boolean isMoveInBound(String move, GameBoard gb, TileRack tileRack) {
-    //
-    //        String wordMove = this.currentMove.getWordMove();
-    //        String squareMove = this.currentMove.getSquareMove(); // e.g. "a16"
-    //
-    //        // this value is used to check if the word played will exceed the board bounds
-    //        int lengthOfTravel = this.currentMove.getTravelLength();
-    //
-    //        char letter = 'a'; // 'a' is a dummy char, will be replaced
-    //        StringBuilder digitBuilder = new StringBuilder();
-    //        for (char ch : squareMove.toCharArray()) {
-    //            if (Character.isLetter(ch)) {
-    //                letter = ch; // e.g. f
-    //            } else {
-    //                if (Character.isDigit(ch)) digitBuilder.append(ch);
-    //            }
-    //        }
-    //        int digit = Integer.parseInt(digitBuilder.toString()); // e.g. 16
-    //
-    //        boolean moveInBound;
-    //        String moveDirection = getSquareMoveDirection(squareMove);
-    //        // if move direction is rightward, check if the letter will be in bound*
-    //        // if move direction is downward, check if the digit will be in bound*
-    //        // *with consideration of the length of travel
-    //        if (moveDirection.equals("RIGHTWARD")) {
-    //            moveInBound = ((letter + lengthOfTravel - 1) < 'a' + gb.getGameBoardSize());
-    //        } else {
-    //            moveInBound = (digit + lengthOfTravel - 1 <= gb.getGameBoardSize());
-    //        }
-    //
-    //        if (moveInBound) {
-    //            this.currentMove = new Move(moveDirection, wordMove, letter, digit, lengthOfTravel);
-    //            Square startSquare = this.getCurrentMove().getStartSquare(gb);
-    //            if (startSquare.isSquareOccupied()) {
-    //                System.out.println("Illegal move, the first tile cannot be placed on an occupied square");
-    //                return false;
-    //            }
-    //            return true;
-    //        }
-    //
-    //        System.out.println("Illegal move, move result out of bounds");
-    //        return false;
-    //    }
 
 }

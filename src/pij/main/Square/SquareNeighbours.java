@@ -38,34 +38,12 @@ public class SquareNeighbours {
         this.rightNeighbour = rightNeighbour;
     }
 
-    public boolean isSquareOnBoardEdge(){
-        return (this.getLeftNeighbour() == null || this.getRightNeighbour() == null)
-               || (this.getBottomNeighbour() == null || this.getTopNeighbour() == null);
-
-    }
-
-    public boolean isSquareOnLeftEdge(){
-        return this.getLeftNeighbour() == null;
-    }
-
     public boolean isSquareOnRightEdge(){
         return this.getRightNeighbour() == null;
     }
 
-    public boolean isSquareOnTopEdge(){
-        return this.getTopNeighbour() == null;
-    }
-
     public boolean isSquareOnBottomEdge(){
         return this.getBottomNeighbour() == null;
-    }
-
-    public boolean isSquareOnLeftOrRightEdge(){
-        return this.getRightNeighbour() == null || this.getLeftNeighbour() == null;
-    }
-
-    public boolean isSquareOnTopOrBottomEdge(){
-        return this.getTopNeighbour() == null || this.getBottomNeighbour() == null;
     }
 
     public boolean hasTopOccupiedNeighbour() {
@@ -82,6 +60,6 @@ public class SquareNeighbours {
     }
 
     public boolean hasNoNeighbour() {
-        return !this.getTopNeighbour().isSquareOccupied() && !this.getBottomNeighbour().isSquareOccupied() && !this.getLeftNeighbour().isSquareOccupied() && !this.getRightNeighbour().isSquareOccupied();
+        return !hasBtmOccupiedNeighbour() && !hasLeftOccupiedNeighbour() && !hasRightOccupiedNeighbour() && !hasTopOccupiedNeighbour();
     }
 }
