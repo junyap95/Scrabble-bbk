@@ -32,7 +32,7 @@ public class GameCounters {
     public void incrementPassCounter() {
         this.passCounter++;
     }
-    public void refreshPassCounter() {
+    public void resetPassCounter() {
         this.passCounter = 0;
     }
 

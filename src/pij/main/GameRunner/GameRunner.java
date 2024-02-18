@@ -2,6 +2,7 @@ package pij.main.GameRunner;
 
 import pij.main.FileReader.FileProcessor;
 import pij.main.GameBoard.GameBoard;
+import pij.main.Move.Move;
 import pij.main.Players.ComputerPlayer;
 import pij.main.Players.HumanPlayer;
 import pij.main.Players.Player;
@@ -20,8 +21,6 @@ public class GameRunner {
     private HumanPlayer humanPlayer;
     private Player computerPlayer;
     private GameCounters gameCounters;
-    private boolean isGameOver = false;
-    private List<String> wordsAlreadyPlayed;
 
     // constructor - initialises a new game
     public GameRunner() {
@@ -37,7 +36,7 @@ public class GameRunner {
         this.humanPlayer = new HumanPlayer(this.getGameItems().getTileBag()); // new player and tile rack
         this.computerPlayer = new ComputerPlayer(this.getGameItems().getTileBag(), this.gameItems.getGameBoard()); // new player and tile rack
         this.gameCounters = new GameCounters();
-        this.wordsAlreadyPlayed = new ArrayList<>();
+        this.setupTileRacks();
     }
 
     public void loadResources(GameBoard gameBoard) {
@@ -60,8 +59,7 @@ public class GameRunner {
         return passCounter >= 4 || player1Rack.getPlayersTiles().isEmpty() || player2Rack.getPlayersTiles().isEmpty();
     }
 
-    // method - refill players racks every round if possible
-    public void refillTileRacks() {
+    private void setupTileRacks() {
         this.getHumanPlayer().getTileRack().refillUserRack();
         this.getComputerPlayer().getTileRack().refillUserRack();
     }
@@ -76,43 +74,10 @@ public class GameRunner {
     // update the display of the game board
     // update the square status to 'occupied'
     // TODO: instead of passing move and tileRack, pass in the List needed instead?
-    public void updateGameBoard(Move move, TileRack tileRack, Player player) {
-        List<String> wordMoveList = move.getWordMoveList(); // ["D", "O", "G"]
-        List<Tile> playerRack = tileRack.getPlayersTiles(); // 7 existing tiles
-
-        List<Tile> tileToBeSetOnSquare = new ArrayList<>();
-        List<Square> squaresToBeOccupied = move.getListOfSquaresToBeOccupied();
-        List<Square> occupiedSquares = move.getListOfOccupiedSquares();
-
-        // for every letter in wordMoveList, loop through each tile in player's rack
-        // check if there tile's letter value equals to it
-        // if true 1. add the tile's display string to an array
-        // 2. add the corresponding tile to an array. These 2 arrays are in the same order of when they're added
-        for (String s : wordMoveList) {
-            boolean charIsLowerCase = Character.isLowerCase(s.charAt(0));
-            for (Tile tile : playerRack) {
-                if (charIsLowerCase && tile.getDisplayAsLetter().equals("_")) {
-                    String wildCardNewDisplay = tile.getDisplayOnBoard().replace("_", s);
-                    tile.setDisplayOnBoard(wildCardNewDisplay);
-                    tileToBeSetOnSquare.add(tile);
-                    playerRack.remove(tile);
-                    break;
-                }
-
-                if (s.equals(tile.getDisplayAsLetter())) {
-                    tileToBeSetOnSquare.add(tile);
-                    playerRack.remove(tile);
-                    break;
-                }
-            }
-        }
-
+    public void updateGameBoard(List<Square> squaresToBeOccupied, List<Tile> tileToBeSetOnSquare) {
         for (int i = 0; i < squaresToBeOccupied.size(); i++) {
             squaresToBeOccupied.get(i).setTileOnSquare(tileToBeSetOnSquare.get(i));
         }
-        // refills tile rack once everything operation is done
-        player.getTileRack().refillUserRack();
-        this.updatePlayerScore(this.calculateScore(tileToBeSetOnSquare, squaresToBeOccupied, occupiedSquares), player);
     }
 
     // helper methods for score calculations and update
@@ -145,7 +110,8 @@ public class GameRunner {
         return result;
     }
 
-    private void updatePlayerScore(int score, Player player) {
+    public void updatePlayerScore(List<Tile> tileToBeSetOnSquare, List<Square> squaresToBeOccupied, List<Square> occupiedSquares, Player player) {
+        int score = this.calculateScore(tileToBeSetOnSquare, squaresToBeOccupied, occupiedSquares);
         player.updateScore(score);
     }
 

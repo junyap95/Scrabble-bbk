@@ -1,10 +1,10 @@
-package pij.main.GameRunner;
+package pij.main.Move;
 
 import pij.main.FileReader.FileProcessor;
 import pij.main.GameBoard.GameBoard;
+import pij.main.GameRunner.GameTextPrinter;
 import pij.main.Square.Square;
 import pij.main.TileBag.TileRack;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,53 +26,58 @@ public class MoveValidator {
     // constructor helper method - for new Move creation
     public Move createMove() {
         String move = this.moveString;
-        boolean canMoveBeCreated = false;
-        Move moveCreated = null;
 
-        while (!canMoveBeCreated) {
-            // the bare minimum requirement for a string must include one comma
-            if (!move.contains(",") || move.contains(" ")) {
-                break;
-            }
+        // the bare minimum requirement for a string must include one comma
+        if (!move.contains(",") || move.contains(" ")) {
+            return null;
+        }
 
-            // if not 2-part splitting, there are >1 comma included
-            if (move.split(",").length != 2 && !move.equals(",")) {
-                break;
-            }
+        // if not 2-part splitting, there are >1 comma included
+        if (move.split(",").length != 2 && !move.equals(",")) {
+            return null;
+        }
 
-            String wordMove = moveString.split(",")[0];
-            String squareMove = moveString.split(",")[1];
+        String wordMove = moveString.split(",")[0];
+        String squareMove = moveString.split(",")[1];
 
-            char letter = '_'; // '_' is a dummy to be replaced
-            StringBuilder digitBuilder = new StringBuilder();
-            boolean hasDigit = false;
-            boolean hasLetter = false;
-            for (char ch : squareMove.toCharArray()) {
-                if (Character.isLetter(ch)) {
-                    hasLetter = true;
-                    letter = ch; // e.g. f
-                } else {
-                    hasDigit = true;
-                    digitBuilder.append(ch);
+        char letter = '_'; // '_' is a dummy to be replaced
+        StringBuilder digitBuilder = new StringBuilder();
+        boolean hasDigit = false;
+        boolean hasLetter = false;
+        boolean hasInvalidChar = false;
+
+        for (char ch : squareMove.toCharArray()) {
+            if (Character.isLetter(ch)) {
+                if (hasLetter) {
+                    hasInvalidChar = true;
+                    break;
                 }
-            }
-            if (!hasLetter || !hasDigit) {
+                hasLetter = true;
+                letter = ch; // e.g. f
+            } else if (Character.isDigit(ch)) {
+                hasDigit = true;
+                digitBuilder.append(ch);
+            } else {
+                hasInvalidChar = true;
                 break;
-            }
-            int digit = Integer.parseInt(digitBuilder.toString());
-            int xIndex = digit - 1;
-            int yIndex = letter -97;
-
-            if(gameBoard.getSquareByIndex(xIndex, yIndex).isSquareOccupied()) {
-                break;
-            } // if start square is already occupied
-
-            if (digit <= gameBoard.getGameBoardSize() && letter < 'a' + gameBoard.getGameBoardSize()) {
-                canMoveBeCreated = true;
-                moveCreated = new Move(wordMove, squareMove, xIndex, yIndex, this.gameBoard);
             }
         }
-        return moveCreated;
+
+        if (hasInvalidChar || !hasLetter || !hasDigit) {
+            return null;
+        }
+        int digit = Integer.parseInt(digitBuilder.toString());
+        int xIndex = digit - 1;
+        int yIndex = letter -97;
+
+        if (xIndex < 0 || xIndex >= this.gameBoard.getGameBoardSize() || yIndex < 0 || yIndex >= this.gameBoard.getGameBoardSize()) {
+            return null;
+        }
+        if(gameBoard.getSquareByIndex(xIndex, yIndex).isSquareOccupied()) {
+            return null;
+        } // if start square is already occupied
+
+        return new Move(wordMove, squareMove, xIndex, yIndex, this.gameBoard);
     }
 
     public Move getCurrentMove() {
@@ -85,7 +90,6 @@ public class MoveValidator {
             GameTextPrinter.printIllegalMoveFormat();
             return false;
         }
-        if (this.currentMove.isPass) return true;
 
         String wordMove = this.currentMove.getWordMove(); // i.e. "HI"
         String squareMove = this.currentMove.getSquareMove(); // i.e. "f4"
@@ -168,13 +172,13 @@ public class MoveValidator {
     }
 
     public boolean isMovePlayableOnBoard(boolean isFirstRound) {
-        if (this.currentMove == null || this.currentMove.isPass() || this.currentMove.getWordFormed() == null) {
+        if (this.currentMove == null || this.currentMove.getWordFormed() == null) {
             GameTextPrinter.printIllegalMoveFormat();
             return false;
         }
         String wordFormedFromMove = this.currentMove.getWordFormed();
         List<Square> listOfPlayableSquares = this.currentMove.getListOfAllPlayableSquares();
-        String direction = this.currentMove.getMoveDirection();
+        Direction direction = this.currentMove.getMoveDirection();
         Square centreSquare = this.gameBoard.getCentreSquare(); // needed for first round
 
         // in first round and if the board is still empty due to player passing round
@@ -187,14 +191,14 @@ public class MoveValidator {
                 hasOverLap = true;
             }
 
-            if(direction.equals("RIGHTWARD")) {
+            if(direction.equals(Direction.RIGHTWARD)) {
                 if (!sq.isSquareOccupied() && (sq.hasTopOccupiedNeighbour() || sq.hasBtmOccupiedNeighbour())) {
                     GameTextPrinter.printWordPermittedAtPosition(this.currentMove);
                     return false;
                 }
             }
 
-            if(direction.equals("DOWNWARD")) {
+            if(direction.equals(Direction.DOWNWARD)) {
                 if (!sq.isSquareOccupied() && (sq.hasLeftOccupiedNeighbour() || sq.hasRightOccupiedNeighbour())) {
                     GameTextPrinter.printWordPermittedAtPosition(this.currentMove);
                     return false;

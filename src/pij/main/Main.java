@@ -5,9 +5,16 @@ import pij.main.GameBoard.GameBoard;
 import pij.main.GameRunner.GameCounters;
 import pij.main.GameRunner.GameRunner;
 import pij.main.GameRunner.GameTextPrinter;
-import pij.main.GameRunner.MoveValidator;
+import pij.main.Move.Move;
+import pij.main.Move.MoveValidator;
 import pij.main.Players.Player;
+import pij.main.Square.Square;
+import pij.main.TileBag.Tile;
 import pij.main.TileBag.TileRack;
+
+import java.util.List;
+
+import static pij.main.Move.Move.PASS;
 
 public class Main {
 
@@ -17,7 +24,6 @@ public class Main {
         Player computerPlayer = gr.getComputerPlayer();
         GameBoard gameBoard = gr.getGameItems().getGameBoard();
         GameCounters gameCounters = gr.getGameCounters();
-        String PASS = ",";
 
         boolean isHumanPlayer = true;
 
@@ -26,12 +32,11 @@ public class Main {
             System.out.println("round " + gameCounters.getRoundCounter());
             System.out.println("which player now? " + currentPlayer);
             TileRack playerRack = isHumanPlayer ? gr.getHumanPlayer().getTileRack() : gr.getComputerPlayer().getTileRack();
-            gr.refillTileRacks();
 
             if(isHumanPlayer){
                 if (gameCounters.isGameOpen()) {
-                    GameTextPrinter.printComputersRack();
-                    System.out.println(gr.getComputerPlayer().getTileRack());
+                    GameTextPrinter.printOpenGameMessage();
+                    System.out.println("OPEN GAME: " + gr.getComputerPlayer().getTileRack());
                 }
 
                 GameTextPrinter.printItsYourTurn();
@@ -50,28 +55,32 @@ public class Main {
                 MoveValidator moveValidator = new MoveValidator(playersMove, gameBoard); // new unverified move created here
                 isMoveVerified = moveValidator.isMovePermitted(playerRack, gameCounters.getRoundCounter() == 1);
                 if (isMoveVerified) {
-                    System.out.println("The move is: " + "   Word: " + moveValidator.getCurrentMove().getWordMove() + " at position " + moveValidator.getCurrentMove().getSquareMove());
-                    FileProcessor.addToWordAlreadyPlayed(moveValidator.getCurrentMove().getWordFormed());
-                    gr.updateGameBoard(moveValidator.getCurrentMove(), playerRack, currentPlayer);
+                    Move move = moveValidator.getCurrentMove();
+                    System.out.println("The move is:   Word: " + move.getWordMove() + " at position " + move.getSquareMove());
+                    FileProcessor.addToWordAlreadyPlayed(move.getWordFormed());
+
+
+                    List<Tile> tilesToBeSetOnSquare = move.getTilesToBeSetOnSquare(playerRack);
+                    List<Square> squaresToBeOccupied = move.getListOfSquaresToBeOccupied();
+                    List<Square> occupiedSquares = move.getListOfOccupiedSquares();
+                    System.out.println(tilesToBeSetOnSquare);
+                    System.out.println(squaresToBeOccupied);
+                    gr.updateGameBoard(squaresToBeOccupied, tilesToBeSetOnSquare);
+
+                    gr.updatePlayerScore(tilesToBeSetOnSquare, squaresToBeOccupied, occupiedSquares, currentPlayer);
                     System.out.println("Human player score: " + humanPlayer.getPlayerScore());
                     System.out.println("Computer player score: " + computerPlayer.getPlayerScore() + "\n");
-                    gameCounters.refreshPassCounter();
+
+                    gameCounters.resetPassCounter();
                     gameBoard.printGameBoard();
                 }
             }
 
+            currentPlayer.getTileRack().refillUserRack();
             gameCounters.incrementRoundCounter();
             isHumanPlayer = !isHumanPlayer;
         }
-        System.out.println("Game Over!");
-        System.out.println("The human player scored " + humanPlayer.getPlayerScore());
-        System.out.println("The computer player scored " + computerPlayer.getPlayerScore());
-        System.out.println(humanPlayer.getPlayerScore() > computerPlayer.getPlayerScore() ?
-                            "The human player wins! " : "The computer player wins!");
-
-
-//                scanner.close();
-
+        GameTextPrinter.printGameOver(humanPlayer, computerPlayer);
     }
 
 }

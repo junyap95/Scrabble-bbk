@@ -1,7 +1,9 @@
-package pij.main.GameRunner;
+package pij.main.Move;
 
 import pij.main.GameBoard.GameBoard;
 import pij.main.Square.Square;
+import pij.main.TileBag.Tile;
+import pij.main.TileBag.TileRack;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,7 +11,7 @@ import java.util.List;
 
 public class Move {
 
-    String moveDirection;
+    Direction moveDirection;
     String wordMove; // "DOG"
     String squareMove; // "a1"
     List<String> wordMoveList; // ["D", "O", "G"]
@@ -20,7 +22,8 @@ public class Move {
 
     int startSquareX;
     int startSquareY;
-    boolean isPass;
+
+    public static final String PASS = ",";
 
     public Move(String wordMove, String squareMove, int startSquareX, int startSquareY, GameBoard gameBoard) {
         this.wordMove = wordMove;
@@ -31,8 +34,13 @@ public class Move {
         this.gameBoard = gameBoard;
         this.wordMoveList = this.createWordMoveList(wordMove);
         this.getWordFormed();
+    }
 
-        this.isPass = false;
+    public static String getSquareMoveByIndex(int x, int y, Direction direction) {
+        String xCoord = Integer.valueOf(x + 1).toString();
+        String yCoord = Character.toString(y + 97);
+
+        return direction.equals(Direction.RIGHTWARD) ? xCoord + yCoord : yCoord + xCoord;
     }
 
     @Override
@@ -42,22 +50,10 @@ public class Move {
 
     private void setMoveDirection() {
         boolean firstCharIsDigit = Character.isDigit(this.squareMove.charAt(0));
-        this.moveDirection = firstCharIsDigit ? "RIGHTWARD" : "DOWNWARD";
+        this.moveDirection = firstCharIsDigit ? Direction.RIGHTWARD : Direction.DOWNWARD;
     }
 
-    public void setMoveDirectionDown(){
-        this.moveDirection = "DOWNWARD";
-    }
-
-    public void setMoveDirectionRight(){
-        this.moveDirection = "RIGHTWARD";
-    }
-
-    public boolean isPass() {
-        return this.isPass;
-    }
-
-    public String getMoveDirection() {
+    public Direction getMoveDirection() {
         return this.moveDirection;
     }
 
@@ -67,10 +63,6 @@ public class Move {
 
     public String getSquareMove() {
         return this.squareMove;
-    }
-
-    public int getTravelLength() {
-        return this.wordMove.length();
     }
 
     public List<String> getWordMoveList() {
@@ -85,14 +77,13 @@ public class Move {
         return startSquareY;
     }
 
-    public Square getStartSquare(GameBoard gb) {
-        return gb.getSquareByIndex(this.getStartSquareX(), this.getStartSquareY());
+    public Square getStartSquare() {
+        return this.gameBoard.getSquareByIndex(this.getStartSquareX(), this.getStartSquareY());
     }
 
     // this is the list of squares that will be occupied by tiles played
     public String getWordFormed() {
-        if (this.isPass()) return null;
-        Square startSquare = this.getStartSquare(this.gameBoard);
+        Square startSquare = this.getStartSquare();
         Square leftPointer = startSquare.getLeftNeighbour() == null ? null : startSquare.getLeftNeighbour();
         Square topPointer = startSquare.getTopNeighbour() == null ? null : startSquare.getTopNeighbour();
         StringBuilder stringBuilderLeft = new StringBuilder();
@@ -112,15 +103,15 @@ public class Move {
 //                this.setMoveDirectionRight();
 //            } else return null;
 //        }
-
-        while (this.getMoveDirection().equals("RIGHTWARD") && leftPointer != null && leftPointer.isSquareOccupied()) {
+        // TODO: Remove duplication
+        while (this.getMoveDirection().equals(Direction.RIGHTWARD) && leftPointer != null && leftPointer.isSquareOccupied()) {
             stringBuilderLeft.append(leftPointer.getTileOnSquare().getDisplayAsLetter());
             listOfOccupiedSquares.add(leftPointer);
             listOfAllPlayableSquares.add(leftPointer);
             leftPointer = leftPointer.getLeftNeighbour();
         }
 
-        while (this.getMoveDirection().equals("DOWNWARD") && topPointer != null && topPointer.isSquareOccupied()) {
+        while (this.getMoveDirection().equals(Direction.DOWNWARD) && topPointer != null && topPointer.isSquareOccupied()) {
             stringBuilderLeft.append(topPointer.getTileOnSquare().getDisplayAsLetter());
             listOfOccupiedSquares.add(topPointer);
             listOfAllPlayableSquares.add(topPointer);
@@ -129,7 +120,7 @@ public class Move {
 
         List<String> wordList = new ArrayList<>(this.wordMoveList); // shallow copy
 
-        while(!wordList.isEmpty() || startSquare.isSquareOccupied()){
+        while(!wordList.isEmpty() || (startSquare != null && startSquare.isSquareOccupied())){
             if(startSquare.isSquareOccupied()) {
                 String tileDisplayAsLetter = startSquare.getTileOnSquare().getDisplayAsLetter();
                 stringBuilderRight.append(tileDisplayAsLetter);
@@ -142,10 +133,8 @@ public class Move {
                 listOfAllPlayableSquares.add(startSquare);
                 wordList.remove(word);
             }
-            // TODO: edge error
-            startSquare = this.getMoveDirection().equals("RIGHTWARD") ?
-                    (startSquare.isSquareOnRightEdge() ? startSquare : startSquare.getRightNeighbour()) :
-                    (startSquare.isSquareOnBottomEdge() ? startSquare :startSquare.getBottomNeighbour());
+            // TODO: edge error(fixed?)
+            startSquare = this.getMoveDirection().equals(Direction.RIGHTWARD) ? startSquare.getRightNeighbour() : startSquare.getBottomNeighbour();
         }
         this.listOfAllPlayableSquares = listOfAllPlayableSquares;
         this.listOfOccupiedSquares = listOfOccupiedSquares;
@@ -158,7 +147,47 @@ public class Move {
     }
 
     public List<Square> getListOfSquaresToBeOccupied() {
+        Square startSquare = this.getStartSquare();
+        List<Square> listOfSquaresToBeOccupied = new ArrayList<>();
+        List<String> wordList = new ArrayList<>(this.wordMoveList); // shallow copy
+
+        while(!wordList.isEmpty() || startSquare.isSquareOccupied()) {
+            System.out.println("wordList " + wordList);
+            if (!startSquare.isSquareOccupied()) {
+                String word = wordList.getFirst();
+                listOfSquaresToBeOccupied.add(startSquare);
+                wordList.remove(word);
+            }
+            startSquare = this.getMoveDirection().equals(Direction.RIGHTWARD) ? startSquare.getRightNeighbour() : startSquare.getBottomNeighbour();
+        }
         return listOfSquaresToBeOccupied;
+    }
+
+    public List<Tile> getTilesToBeSetOnSquare(TileRack tileRack) {
+        List<Tile> playerRack = tileRack.getPlayersTiles(); // 7 existing tiles
+        List<Tile> tilesToBeSetOnSquare = new ArrayList<>();
+
+        // for every letter in wordMoveList, loop through each tile in player's rack
+        // check if there tile's letter value equals to it
+        // if true 1. add the tile's display string to an array
+        // 2. add the corresponding tile to an array. These 2 arrays are in the same order of when they're added
+        for (String s : this.wordMoveList) {
+            boolean charIsLowerCase = Character.isLowerCase(s.charAt(0));
+            for (Tile tile : playerRack) {
+                if (charIsLowerCase && tile.getDisplayAsLetter().equals("_")) {
+                    String wildCardNewDisplay = tile.getDisplayOnBoard().replace("_", s);
+                    tile.setDisplayOnBoard(wildCardNewDisplay);
+                    tilesToBeSetOnSquare.add(tile);
+                    playerRack.remove(tile);
+                    break;
+                } else if (s.equals(tile.getDisplayAsLetter())) {
+                    tilesToBeSetOnSquare.add(tile);
+                    playerRack.remove(tile);
+                    break;
+                }
+            }
+        }
+        return  tilesToBeSetOnSquare;
     }
 
     public List<Square> getListOfAllPlayableSquares() {
