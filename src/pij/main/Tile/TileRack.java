@@ -1,4 +1,4 @@
-package pij.main.TileBag;
+package pij.main.Tile;
 
 import java.util.ArrayList;
 import java.util.List;

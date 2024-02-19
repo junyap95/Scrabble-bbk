@@ -1,7 +1,7 @@
 package pij.main.Players;
 
-import pij.main.TileBag.TileBag;
-import pij.main.TileBag.TileRack;
+import pij.main.Tile.TileBag;
+import pij.main.Tile.TileRack;
 
 public abstract class Player {
      private int playerScore;

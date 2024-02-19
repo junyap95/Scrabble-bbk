@@ -1,16 +1,11 @@
 package pij.main.Square;
 
-import pij.main.TileBag.Tile;
+import pij.main.Tile.Tile;
 
 public class Square extends SquareNeighbours {
     private SquareType squareType;
     private String squareDisplayOnBoard;
     private Integer squareScore;
-
-    public void setSquareOccupied() {
-        isSquareOccupied = true;
-    }
-
     private boolean isSquareOccupied;
     private Tile tileOnSquare;
 

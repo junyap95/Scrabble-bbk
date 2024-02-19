@@ -1,8 +1,7 @@
 package pij.main.GameRunner;
 
 import pij.main.GameBoard.GameBoard;
-import pij.main.TileBag.TileBag;
-import pij.main.TileBag.TileRack;
+import pij.main.Tile.TileBag;
 
 public class GameItems {
     // shared game items

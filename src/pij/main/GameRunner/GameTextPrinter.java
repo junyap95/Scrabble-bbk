@@ -2,7 +2,7 @@ package pij.main.GameRunner;
 
 import pij.main.Move.Move;
 import pij.main.Players.Player;
-import pij.main.TileBag.TileRack;
+import pij.main.Tile.TileRack;
 
 public class GameTextPrinter {
 

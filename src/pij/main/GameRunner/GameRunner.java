@@ -2,16 +2,14 @@ package pij.main.GameRunner;
 
 import pij.main.FileReader.FileProcessor;
 import pij.main.GameBoard.GameBoard;
-import pij.main.Move.Move;
 import pij.main.Players.ComputerPlayer;
 import pij.main.Players.HumanPlayer;
 import pij.main.Players.Player;
 import pij.main.Square.Square;
 import pij.main.Square.SquareType;
-import pij.main.TileBag.Tile;
-import pij.main.TileBag.TileRack;
+import pij.main.Tile.Tile;
+import pij.main.Tile.TileRack;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 

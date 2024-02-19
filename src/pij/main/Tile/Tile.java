@@ -1,4 +1,4 @@
-package pij.main.TileBag;
+package pij.main.Tile;
 
 public class Tile {
     private final int tileScore;

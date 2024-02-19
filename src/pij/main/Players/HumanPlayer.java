@@ -1,7 +1,7 @@
 package pij.main.Players;
 
 import pij.main.GameRunner.GameTextPrinter;
-import pij.main.TileBag.TileBag;
+import pij.main.Tile.TileBag;
 
 import java.util.Scanner;
 

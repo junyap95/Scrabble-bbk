@@ -2,8 +2,8 @@ package pij.main.Move;
 
 import pij.main.GameBoard.GameBoard;
 import pij.main.Square.Square;
-import pij.main.TileBag.Tile;
-import pij.main.TileBag.TileRack;
+import pij.main.Tile.Tile;
+import pij.main.Tile.TileRack;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,11 +19,8 @@ public class Move {
     List<Square> listOfOccupiedSquares;
     List<Square> listOfAllPlayableSquares;
     GameBoard gameBoard;
-
     int startSquareX;
     int startSquareY;
-
-    public static final String PASS = ",";
 
     public Move(String wordMove, String squareMove, int startSquareX, int startSquareY, GameBoard gameBoard) {
         this.wordMove = wordMove;
@@ -33,7 +30,6 @@ public class Move {
         this.startSquareY = startSquareY;
         this.gameBoard = gameBoard;
         this.wordMoveList = this.createWordMoveList(wordMove);
-        this.getWordFormed();
     }
 
     public static String getSquareMoveByIndex(int x, int y, Direction direction) {
@@ -41,11 +37,6 @@ public class Move {
         String yCoord = Character.toString(y + 97);
 
         return direction.equals(Direction.RIGHTWARD) ? xCoord + yCoord : yCoord + xCoord;
-    }
-
-    @Override
-    public String toString() {
-        return "Move " + this.listOfAllPlayableSquares;
     }
 
     private void setMoveDirection() {
@@ -77,82 +68,117 @@ public class Move {
         return startSquareY;
     }
 
-    public Square getStartSquare() {
+    private Square getStartSquare() {
         return this.gameBoard.getSquareByIndex(this.getStartSquareX(), this.getStartSquareY());
+
     }
 
-    // this is the list of squares that will be occupied by tiles played
     public String getWordFormed() {
         Square startSquare = this.getStartSquare();
-        Square leftPointer = startSquare.getLeftNeighbour() == null ? null : startSquare.getLeftNeighbour();
-        Square topPointer = startSquare.getTopNeighbour() == null ? null : startSquare.getTopNeighbour();
+        System.out.println("startSquare " + startSquare);
         StringBuilder stringBuilderLeft = new StringBuilder();
         StringBuilder stringBuilderRight = new StringBuilder();
 
-        // for score calculations
-        List<Square> listOfSquaresToBeOccupied = new ArrayList<>();
-        List<Square> listOfOccupiedSquares = new ArrayList<>();
-        List<Square> listOfAllPlayableSquares = new ArrayList<>();
+        Direction moveDirection = this.getMoveDirection();
+        Square leftOrTopPointer = moveDirection.equals(Direction.RIGHTWARD) ? startSquare.getLeftNeighbour() : startSquare.getTopNeighbour();
 
-        // TODO: travel length should be in constructor to set direction etc
-        // start square on occupied tile error
-//        if(this.getTravelLength() == 1) {
-//            if(startSquare.hasTopOccupiedNeighbour() || startSquare.hasBtmOccupiedNeighbour()) {
-//                this.setMoveDirectionDown();
-//            }else if(startSquare.hasLeftOccupiedNeighbour() || startSquare.hasRightOccupiedNeighbour()) {
-//                this.setMoveDirectionRight();
-//            } else return null;
-//        }
-        // TODO: Remove duplication
-        while (this.getMoveDirection().equals(Direction.RIGHTWARD) && leftPointer != null && leftPointer.isSquareOccupied()) {
-            stringBuilderLeft.append(leftPointer.getTileOnSquare().getDisplayAsLetter());
-            listOfOccupiedSquares.add(leftPointer);
-            listOfAllPlayableSquares.add(leftPointer);
-            leftPointer = leftPointer.getLeftNeighbour();
-        }
-
-        while (this.getMoveDirection().equals(Direction.DOWNWARD) && topPointer != null && topPointer.isSquareOccupied()) {
-            stringBuilderLeft.append(topPointer.getTileOnSquare().getDisplayAsLetter());
-            listOfOccupiedSquares.add(topPointer);
-            listOfAllPlayableSquares.add(topPointer);
-            topPointer = topPointer.getTopNeighbour();
+        while (leftOrTopPointer != null && leftOrTopPointer.isSquareOccupied()) {
+            System.out.println("first while loop " + leftOrTopPointer);
+            stringBuilderLeft.append(leftOrTopPointer.getTileOnSquare().getDisplayAsLetter());
+            leftOrTopPointer = moveDirection.equals(Direction.RIGHTWARD) ? leftOrTopPointer.getLeftNeighbour() : leftOrTopPointer.getTopNeighbour();
         }
 
         List<String> wordList = new ArrayList<>(this.wordMoveList); // shallow copy
 
-        while(!wordList.isEmpty() || (startSquare != null && startSquare.isSquareOccupied())){
-            if(startSquare.isSquareOccupied()) {
+        while (!wordList.isEmpty() || (startSquare != null && startSquare.isSquareOccupied())) {
+            System.out.println("second while loop");
+
+            if (startSquare.isSquareOccupied()) {
                 String tileDisplayAsLetter = startSquare.getTileOnSquare().getDisplayAsLetter();
                 stringBuilderRight.append(tileDisplayAsLetter);
-                listOfOccupiedSquares.add(startSquare);
-                listOfAllPlayableSquares.add(startSquare);
-            }else{
+            } else {
                 String word = wordList.getFirst();
                 stringBuilderRight.append(word);
-                listOfSquaresToBeOccupied.add(startSquare);
-                listOfAllPlayableSquares.add(startSquare);
                 wordList.remove(word);
             }
-            // TODO: edge error(fixed?)
             startSquare = this.getMoveDirection().equals(Direction.RIGHTWARD) ? startSquare.getRightNeighbour() : startSquare.getBottomNeighbour();
         }
-        this.listOfAllPlayableSquares = listOfAllPlayableSquares;
-        this.listOfOccupiedSquares = listOfOccupiedSquares;
-        this.listOfSquaresToBeOccupied = listOfSquaresToBeOccupied;
+
         return stringBuilderLeft.reverse() + stringBuilderRight.toString();
     }
 
     private List<String> createWordMoveList(String s) {
-        return Arrays.asList(s.split("")) ;
+        return Arrays.asList(s.split(""));
+    }
+
+    public List<Square> getListOfAllPlayableSquares() {
+        if (this.listOfAllPlayableSquares != null) return this.listOfAllPlayableSquares;
+        Square startSquare = this.getStartSquare();
+
+        // for score calculations
+        List<Square> listOfAllPlayableSquares = new ArrayList<>();
+
+        Direction moveDirection = this.getMoveDirection();
+        Square leftOrTopPointer = moveDirection.equals(Direction.RIGHTWARD) ? startSquare.getLeftNeighbour() : startSquare.getTopNeighbour();
+
+        while (leftOrTopPointer != null && leftOrTopPointer.isSquareOccupied()) {
+            listOfAllPlayableSquares.add(leftOrTopPointer);
+            leftOrTopPointer = moveDirection.equals(Direction.RIGHTWARD) ? leftOrTopPointer.getLeftNeighbour() : leftOrTopPointer.getTopNeighbour();
+        }
+
+        List<String> wordList = new ArrayList<>(this.wordMoveList); // shallow copy
+
+        while (!wordList.isEmpty() || (startSquare != null && startSquare.isSquareOccupied())) {
+            if (startSquare.isSquareOccupied()) {
+                listOfAllPlayableSquares.add(startSquare);
+            } else {
+                String word = wordList.getFirst();
+                listOfAllPlayableSquares.add(startSquare);
+                wordList.remove(word);
+            }
+            startSquare = this.getMoveDirection().equals(Direction.RIGHTWARD) ? startSquare.getRightNeighbour() : startSquare.getBottomNeighbour();
+        }
+        this.listOfAllPlayableSquares = listOfAllPlayableSquares;
+        return listOfAllPlayableSquares;
+    }
+
+    public List<Square> getListOfOccupiedSquares() {
+        if (this.listOfOccupiedSquares != null) return this.listOfOccupiedSquares;
+        Square startSquare = this.getStartSquare();
+
+        List<Square> listOfOccupiedSquares = new ArrayList<>();
+
+        Direction moveDirection = this.getMoveDirection();
+        Square leftOrTopPointer = moveDirection.equals(Direction.RIGHTWARD) ? startSquare.getLeftNeighbour() : startSquare.getTopNeighbour();
+
+        while (leftOrTopPointer != null && leftOrTopPointer.isSquareOccupied()) {
+            listOfOccupiedSquares.add(leftOrTopPointer);
+            leftOrTopPointer = moveDirection.equals(Direction.RIGHTWARD) ? leftOrTopPointer.getLeftNeighbour() : leftOrTopPointer.getTopNeighbour();
+        }
+
+        List<String> wordList = new ArrayList<>(this.wordMoveList); // shallow copy
+
+        while (!wordList.isEmpty() || (startSquare != null && startSquare.isSquareOccupied())) {
+            if (startSquare.isSquareOccupied()) {
+                listOfOccupiedSquares.add(startSquare);
+            } else {
+                String word = wordList.getFirst();
+                wordList.remove(word);
+            }
+            startSquare = this.getMoveDirection().equals(Direction.RIGHTWARD) ? startSquare.getRightNeighbour() : startSquare.getBottomNeighbour();
+        }
+        this.listOfOccupiedSquares = listOfOccupiedSquares;
+        return listOfOccupiedSquares;
     }
 
     public List<Square> getListOfSquaresToBeOccupied() {
+        if (this.listOfSquaresToBeOccupied != null) return this.listOfOccupiedSquares;
         Square startSquare = this.getStartSquare();
+
         List<Square> listOfSquaresToBeOccupied = new ArrayList<>();
         List<String> wordList = new ArrayList<>(this.wordMoveList); // shallow copy
 
-        while(!wordList.isEmpty() || startSquare.isSquareOccupied()) {
-            System.out.println("wordList " + wordList);
+        while (!wordList.isEmpty() || (startSquare != null && startSquare.isSquareOccupied())) {
             if (!startSquare.isSquareOccupied()) {
                 String word = wordList.getFirst();
                 listOfSquaresToBeOccupied.add(startSquare);
@@ -160,6 +186,7 @@ public class Move {
             }
             startSquare = this.getMoveDirection().equals(Direction.RIGHTWARD) ? startSquare.getRightNeighbour() : startSquare.getBottomNeighbour();
         }
+        this.listOfSquaresToBeOccupied = listOfSquaresToBeOccupied;
         return listOfSquaresToBeOccupied;
     }
 
@@ -187,14 +214,11 @@ public class Move {
                 }
             }
         }
-        return  tilesToBeSetOnSquare;
+        return tilesToBeSetOnSquare;
     }
 
-    public List<Square> getListOfAllPlayableSquares() {
-        return this.listOfAllPlayableSquares;
-    }
-
-    public List<Square> getListOfOccupiedSquares() {
-        return listOfOccupiedSquares;
+    @Override
+    public String toString() {
+        return "Move " + this.listOfAllPlayableSquares;
     }
 }

@@ -9,8 +9,8 @@ import pij.main.Move.Move;
 import pij.main.Move.MoveValidator;
 import pij.main.Players.Player;
 import pij.main.Square.Square;
-import pij.main.TileBag.Tile;
-import pij.main.TileBag.TileRack;
+import pij.main.Tile.Tile;
+import pij.main.Tile.TileRack;
 
 import java.util.List;
 

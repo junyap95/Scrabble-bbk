@@ -4,7 +4,7 @@ import pij.main.FileReader.FileProcessor;
 import pij.main.GameBoard.GameBoard;
 import pij.main.GameRunner.GameTextPrinter;
 import pij.main.Square.Square;
-import pij.main.TileBag.TileRack;
+import pij.main.Tile.TileRack;
 import java.util.ArrayList;
 import java.util.List;
 
