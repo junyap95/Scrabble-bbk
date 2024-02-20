@@ -18,9 +18,7 @@ public class FileProcessor {
 
     // helper function to obtain score for a square
     private static int squareScore(String line, int index) {
-        String subStr = Character.isDigit(line.charAt(index + 2)) ?
-                line.substring(index + 1, index + 3) :
-                line.substring(index + 1, index + 2);
+        String subStr = Character.isDigit(line.charAt(index + 2)) ? line.substring(index + 1, index + 3) : line.substring(index + 1, index + 2);
 
         return Integer.parseInt(subStr);
     }
@@ -42,17 +40,12 @@ public class FileProcessor {
     }
 
     public static boolean wordListProcessor(String wordPlayed) {
-        if(wordAlreadyPlayed.contains(wordPlayed)) {
-            System.out.println(wordPlayed +  " is already played once on board!");
+        if (wordAlreadyPlayed.contains(wordPlayed)) {
+            System.out.println(wordPlayed + " is already played once on board!");
             return false;
         }
 
-        if(wordSet.contains(wordPlayed.toLowerCase())) {
-            System.out.println("word exists");
-            return true;
-        }
-        System.out.println(wordPlayed +  " is not a valid word.");
-        return false;
+        return wordSet.contains(wordPlayed.toLowerCase());
     }
 
 
@@ -60,23 +53,21 @@ public class FileProcessor {
         // generate map from player tiles and occupied squares' letters
         Map<Character, Integer> playersLetters = lettersToMap(string.toLowerCase());
         List<String> possibleWords = new ArrayList<>();
-        for(String s : wordSet) {
+        for (String s : wordSet) {
             Map<Character, Integer> wordFromSet = lettersToMap(s);
             boolean canGenerateWord = true;
             for (Character character : wordFromSet.keySet()) {
                 int currentWordCharCount = wordFromSet.get(character);
-                int lettersCharCount = playersLetters.containsKey(character) ?
-                        playersLetters.get(character) : 0;
-                if(currentWordCharCount > lettersCharCount) {
+                int lettersCharCount = playersLetters.containsKey(character) ? playersLetters.get(character) : 0;
+                if (currentWordCharCount > lettersCharCount) {
                     canGenerateWord = false;
                     break;
                 }
             }
-            if(canGenerateWord) {
+            if (canGenerateWord) {
                 possibleWords.add(s);
             }
         }
-        System.out.println("Possible words are: " + possibleWords);
         return possibleWords;
     }
 
@@ -98,7 +89,7 @@ public class FileProcessor {
         try (BufferedReader reader = new BufferedReader(new FileReader("resources/" + fileName))) {
             int boardSize = Integer.parseInt(reader.readLine());
             // verifies if txt file matches the allowed board size
-            if (boardSize <= 11 || boardSize >= 26) {
+            if (boardSize <= 12 || boardSize >= 26) {
                 throw new RuntimeException("Invalid Board");
             }
             // set the allowed board size to game board instance
@@ -111,7 +102,8 @@ public class FileProcessor {
             while ((line = reader.readLine()) != null) {
                 allSquaresOnBoard.add(new ArrayList<>()); // 'inner' arraylist - each line in the txt file will occupy one arraylist
                 for (int i = 0; i < line.length(); i++) {
-                    Square squareCreated = null;
+                    String coordinates = coordinatesGenerator(k, i);
+                    Square squareCreated;
                     switch (line.charAt(i)) {
                         case '.':
                             squareCreated = new Square(SquareType.NORMAL, " . ", 1);
@@ -126,6 +118,8 @@ public class FileProcessor {
                             continue;
                     }
                     allSquaresOnBoard.get(k).add(squareCreated);
+                    int y = allSquaresOnBoard.get(k).indexOf(squareCreated);
+                    squareCreated.setSquareCoordinates(coordinatesGenerator(k, y));
                 }
                 k++;
             }
@@ -139,28 +133,34 @@ public class FileProcessor {
         }
     }
 
+    private static String coordinatesGenerator(int x, int y) {
+        int row = x + 1;
+        char column = (char) ('a' + y );
+        return Integer.toString(row) + column;
+    }
+
     // helper method - for when the 2D array is established
-    private static void createSquareNeighbours(List<List<Square>> allSquaresOnBoard){
+    private static void createSquareNeighbours(List<List<Square>> allSquaresOnBoard) {
 
         // add square neighbours relationship
         for (int i = 0; i < allSquaresOnBoard.size(); i++) {
             for (int j = 0; j < allSquaresOnBoard.get(i).size(); j++) {
                 Square square = allSquaresOnBoard.get(i).get(j);
-                if(i > 0) { // i > 0 means it's not the first inner arraylist - square j has a top neighbour
-                    square.setTopNeighbour(allSquaresOnBoard.get(i-1).get(j));
+                if (i > 0) { // i > 0 means it's not the first inner arraylist - square j has a top neighbour
+                    square.setTopNeighbour(allSquaresOnBoard.get(i - 1).get(j));
                 }
-                if(i < allSquaresOnBoard.size()-1) { // if it is not the last arraylist - square has a bottom neighbour
-                    square.setBottomNeighbour(allSquaresOnBoard.get(i+1).get(j));
+                if (i < allSquaresOnBoard.size() - 1) { // if it is not the last arraylist - square has a bottom neighbour
+                    square.setBottomNeighbour(allSquaresOnBoard.get(i + 1).get(j));
                 }
-                if(j > 0 && j < allSquaresOnBoard.get(i).size() - 1){ // if j is not the first and last square - has left and right neighbours
-                    square.setLeftNeighbour(allSquaresOnBoard.get(i).get(j-1));
-                    square.setRightNeighbour(allSquaresOnBoard.get(i).get(j+1));
+                if (j > 0 && j < allSquaresOnBoard.get(i).size() - 1) { // if j is not the first and last square - has left and right neighbours
+                    square.setLeftNeighbour(allSquaresOnBoard.get(i).get(j - 1));
+                    square.setRightNeighbour(allSquaresOnBoard.get(i).get(j + 1));
                 }
-                if(j == 0){
-                    square.setRightNeighbour(allSquaresOnBoard.get(i).get(j+1));
+                if (j == 0) {
+                    square.setRightNeighbour(allSquaresOnBoard.get(i).get(j + 1));
                 }
-                if(j == allSquaresOnBoard.get(i).size() - 1){
-                    square.setLeftNeighbour(allSquaresOnBoard.get(i).get(j-1));
+                if (j == allSquaresOnBoard.get(i).size() - 1) {
+                    square.setLeftNeighbour(allSquaresOnBoard.get(i).get(j - 1));
                 }
             }
         }

@@ -5,6 +5,7 @@ import pij.main.Tile.Tile;
 public class Square extends SquareNeighbours {
     private SquareType squareType;
     private String squareDisplayOnBoard;
+    private String coordinates;
     private Integer squareScore;
     private boolean isSquareOccupied;
     private Tile tileOnSquare;
@@ -26,6 +27,13 @@ public class Square extends SquareNeighbours {
 
     public Tile getTileOnSquare() {
         return tileOnSquare;
+    }
+    public String getSquareCoordinates() {
+        return this.coordinates;
+    }
+
+    public void setSquareCoordinates(String coordinates) {
+        this.coordinates = coordinates;
     }
 
     public boolean isSquareOccupied() {

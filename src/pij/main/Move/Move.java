@@ -21,6 +21,7 @@ public class Move {
     GameBoard gameBoard;
     int startSquareX;
     int startSquareY;
+    public static final String PASS = ",";
 
     public Move(String wordMove, String squareMove, int startSquareX, int startSquareY, GameBoard gameBoard) {
         this.wordMove = wordMove;
@@ -55,11 +56,7 @@ public class Move {
     public String getSquareMove() {
         return this.squareMove;
     }
-
-    public List<String> getWordMoveList() {
-        return wordMoveList;
-    }
-
+    
     public int getStartSquareX() {
         return startSquareX;
     }
@@ -75,7 +72,6 @@ public class Move {
 
     public String getWordFormed() {
         Square startSquare = this.getStartSquare();
-        System.out.println("startSquare " + startSquare);
         StringBuilder stringBuilderLeft = new StringBuilder();
         StringBuilder stringBuilderRight = new StringBuilder();
 
@@ -83,15 +79,13 @@ public class Move {
         Square leftOrTopPointer = moveDirection.equals(Direction.RIGHTWARD) ? startSquare.getLeftNeighbour() : startSquare.getTopNeighbour();
 
         while (leftOrTopPointer != null && leftOrTopPointer.isSquareOccupied()) {
-            System.out.println("first while loop " + leftOrTopPointer);
             stringBuilderLeft.append(leftOrTopPointer.getTileOnSquare().getDisplayAsLetter());
             leftOrTopPointer = moveDirection.equals(Direction.RIGHTWARD) ? leftOrTopPointer.getLeftNeighbour() : leftOrTopPointer.getTopNeighbour();
         }
 
         List<String> wordList = new ArrayList<>(this.wordMoveList); // shallow copy
 
-        while (!wordList.isEmpty() || (startSquare != null && startSquare.isSquareOccupied())) {
-            System.out.println("second while loop");
+        while ((!wordList.isEmpty()  ||  startSquare.isSquareOccupied()) && startSquare != null) {
 
             if (startSquare.isSquareOccupied()) {
                 String tileDisplayAsLetter = startSquare.getTileOnSquare().getDisplayAsLetter();

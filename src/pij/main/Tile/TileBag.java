@@ -12,7 +12,7 @@ public class TileBag {
         // is it necessary to have it ordered for the gameplay? probably not, but useful for debugging
         tileMap = new LinkedHashMap<>();
         this.tileMap.put("A1",8);
-        this.tileMap.put("B3",3);
+        this.tileMap.put("B3",2);
         this.tileMap.put("C3",2);
         this.tileMap.put("D2",4);
         this.tileMap.put("E1",10);
@@ -43,6 +43,11 @@ public class TileBag {
 
     public Map<String, Integer> getTileMap() {
         return tileMap;
+    }
+
+    // for debugging
+    public int currentAmountOfTilesInTileBag () {
+        return this.tileMap.values().stream().mapToInt(n->n).sum();
     }
 
     @Override

@@ -37,12 +37,22 @@ public class ComputerPlayer extends Player {
         List<Square> playableSquares;
         Square startSquare;
 
+        if(gameBoard.isGameBoardEmpty()) {
+            String squareMove = gameBoard.getCentreSquare().getSquareCoordinates();
+            StringBuilder availableLetters = new StringBuilder(); // all letters from player's tiles and occupied square
+
+            for (Tile t : playersTiles) { // extract letters out of player's tiles
+                availableLetters.append(t.getDisplayAsLetter());
+            }
+            String wordToPlay = FileProcessor.possibleWordsGenerator(availableLetters.toString()).getLast().toUpperCase();
+            return wordToPlay + "," + squareMove;
+        }
+
+
         for (int i = 0; i < gameBoard.getGameBoardSize(); i++) {
-            System.out.println("i " + i);
             for (int j = 0; j < gameBoard.getGameBoardSize(); j++) {
                 startSquare = gameBoard.getSquareByIndex(i, j);
 
-                System.out.println("j: " + j);
 
                 // find start square first, must be unoccupied
                 // if occupied, skips through this if-condition and j++
@@ -62,9 +72,7 @@ public class ComputerPlayer extends Player {
                     for (Direction dir : directionToTest) {
                         playableSquares = new ArrayList<>(); // each direction will have its list of playable squares
                         boolean isThisSquarePlayable = false;
-                        boolean hasOverlap = false;
                         boolean hasInvalidNeighbour = false;
-                        System.out.println("testing direction" + dir);
 
                         // Get/capture all letters to the left/top of the start square, if any
                         Square leftOrTopNeighbour = dir.equals(Direction.RIGHTWARD) ? startSquare.getLeftNeighbour() : startSquare.getTopNeighbour();
@@ -108,16 +116,13 @@ public class ComputerPlayer extends Player {
                         }
 
                         if (isThisSquarePlayable) {
-                            System.out.println("Square is playable" + playableSquares);
                             String availableLetters = getAvailableLetters(playableSquares, playersTiles);
-                            List<String> possibleWords = FileProcessor.possibleWordsGenerator(availableLetters);
-                            System.out.println(possibleWords);
+                            List<String> possibleWords = FileProcessor.possibleWordsGenerator(availableLetters).reversed();
 
                             String occupiedSquaresLetters = extractOccupiedSquaresLetters(playableSquares);
 
                             // for each possible word
                             for (String word : possibleWords) {
-                                System.out.println("current word " + word);
                                 // form a move
                                 // we are still in the for loops, i, j -> x and y for a square
                                 List<String> wordAsArray = new ArrayList<>(Arrays.asList(word.toUpperCase().split("")));
@@ -126,11 +131,10 @@ public class ComputerPlayer extends Player {
                                     wordAsArray.remove(String.valueOf(letterOnBoard));
                                 }
 
-                                String wordToPlay = String.join("", wordAsArray).toUpperCase();
-                                System.out.println("Cleaned up string" + wordAsArray);
+                                String wordToPlay = String.join("", wordAsArray);
+//                                System.out.println("Cleaned up string" + wordAsArray);
 
                                 String move = wordToPlay + "," + Move.getSquareMoveByIndex(i, j, dir);
-                                System.out.println("generated move " + move);
                                 MoveValidator moveValidator = new MoveValidator(move, gameBoard); // new unverified move created here
                                 // TODO: Assume not first round, handle first round later
                                 // TODO: wild card

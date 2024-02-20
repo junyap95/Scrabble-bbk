@@ -9,7 +9,7 @@ import pij.main.Square.Square;
 import pij.main.Square.SquareType;
 import pij.main.Tile.Tile;
 import pij.main.Tile.TileRack;
-
+import java.io.File;
 import java.util.List;
 import java.util.Scanner;
 
@@ -42,11 +42,36 @@ public class GameRunner {
         GameTextPrinter.printLoadBoard();
         String playersChoice;
         playersChoice = scanner.nextLine();
+        boolean validChoice = false;
 
-        if (playersChoice.equals("d")) FileProcessor.boardProcessor(gameBoard, "defaultBoard.txt");
-        // TODO: load board
-        // if (playersChoice.equals("l")) FileProcessor.fileProcessor(gb, "otherBoard.txt");
+        while (!validChoice) {
+            if (playersChoice.equals("d") || playersChoice.equals("l")) {
+                validChoice = true;
+            } else {
+                System.out.println("Please enter a valid letter: d / l ");
+                playersChoice = scanner.nextLine();
+            }
+        }
 
+        if (playersChoice.equals("d")) {
+            FileProcessor.boardProcessor(gameBoard, "defaultBoard.txt");
+        } else {
+            boolean validFileName = false;
+            String loadCustomBoard;
+
+            while (!validFileName) {
+                System.out.println("Please enter your file name in .txt format");
+                loadCustomBoard = scanner.nextLine();
+                File file = new File("resources/" + loadCustomBoard);
+
+                if (file.exists() && loadCustomBoard.endsWith(".txt")) {
+                    validFileName = true;
+                    FileProcessor.boardProcessor(gameBoard, loadCustomBoard);
+                } else {
+                    System.out.println("Invalid file name or format. Please try again, or rerun the program.");
+                }
+            }
+        }
         gameBoard.printGameBoard(); // initial empty gameBoard
     }
 
@@ -84,7 +109,7 @@ public class GameRunner {
         int premiumWordCumulative = 1;
         boolean hasPremiumWord = false;
 
-        for(Square square : listOfOccupiedSquares) {
+        for (Square square : listOfOccupiedSquares) {
             result += square.getTileOnSquare().getTileScore();
         }
 
@@ -103,8 +128,14 @@ public class GameRunner {
         }
 
         if (hasPremiumWord) {
-            return result * premiumWordCumulative;
+            result *= premiumWordCumulative;
         }
+
+        // if player plays all 7 tiles in one move, award 75 points after all other calculations are done
+        if(tileToBeSetOnSquare.size() == 7) {
+            result += 75;
+        }
+
         return result;
     }
 

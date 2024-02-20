@@ -87,7 +87,6 @@ public class MoveValidator {
     // check 1 - format
     public boolean isMoveFormatLegal() {
         if (this.currentMove == null) {
-            GameTextPrinter.printIllegalMoveFormat();
             return false;
         }
 
@@ -100,14 +99,12 @@ public class MoveValidator {
         // longest permitted square move is always 3, shortest 2
         // e.g. "16a" or "e1"
         if (wordMove.length() > LONGEST_PERMITTED_WORD_STRING || wordMove.isEmpty() || squareMove.length() > LONGEST_PERMITTED_SQUARE_STRING || squareMove.length() < 2) {
-            GameTextPrinter.printIllegalMoveFormat();
             return false;
         }
 
         // square move must have small letters only - '8H' not allowe
         for (char ch : squareMove.toCharArray()) {
             if (Character.isUpperCase(ch)) {
-                GameTextPrinter.printIllegalMoveFormat();
                 return false;
             }
         }
@@ -116,7 +113,6 @@ public class MoveValidator {
         // square move cannot be - aa1, 1bc...must contain exactly one letter: 16a, 1a, a13, a3...
         if (squareMove.length() == LONGEST_PERMITTED_SQUARE_STRING) {
             if (Character.isLetter(squareMove.charAt(1))) {
-                GameTextPrinter.printIllegalMoveFormat();
                 return false;
             }
 
@@ -135,7 +131,9 @@ public class MoveValidator {
 
     // check 2 - player's tile rack availability
     public boolean rackContainsMove(TileRack tileRack) {
-
+        if (this.currentMove == null) {
+            return false;
+        }
         // obtain a list of only the letters of a tile (excluding score)
         List<String> listOfLettersFromRack = new ArrayList<>(tileRack.getPlayersTilesAsLetters());
 
@@ -147,13 +145,11 @@ public class MoveValidator {
 
             // if one of the letters is lowercase, check if wildcard("_") is available
             if (isLowerCase && !listOfLettersFromRack.contains("_")) {
-                GameTextPrinter.printTilesNotInRack(tileRack, this.moveString);
                 return false;
             }
 
             // normal capital letter case
             if (!isLowerCase && !listOfLettersFromRack.contains(s)) {
-                GameTextPrinter.printTilesNotInRack(tileRack, this.moveString);
                 return false;
             }
 
@@ -193,21 +189,18 @@ public class MoveValidator {
 
             if(direction.equals(Direction.RIGHTWARD)) {
                 if (!sq.isSquareOccupied() && (sq.hasTopOccupiedNeighbour() || sq.hasBtmOccupiedNeighbour())) {
-                    GameTextPrinter.printWordPermittedAtPosition(this.currentMove);
                     return false;
                 }
             }
 
             if(direction.equals(Direction.DOWNWARD)) {
                 if (!sq.isSquareOccupied() && (sq.hasLeftOccupiedNeighbour() || sq.hasRightOccupiedNeighbour())) {
-                    GameTextPrinter.printWordPermittedAtPosition(this.currentMove);
                     return false;
                 }
             }
 
         }
 
-        if(!hasOverLap) GameTextPrinter.printWordPermittedAtPosition(this.currentMove);
         return hasOverLap && FileProcessor.wordListProcessor(wordFormedFromMove);
     }
 

@@ -16,7 +16,7 @@ class GameBoardTest {
     @Test
     void getGameBoardSize() {
         GameBoard gameBoard = new GameBoard();
-        int gameBoardSize = 4;
+        int gameBoardSize = 14;
         gameBoard.setGameBoardSize(gameBoardSize);
         assertEquals(gameBoard.getGameBoardSize(), gameBoardSize);
     }

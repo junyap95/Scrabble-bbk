@@ -28,9 +28,9 @@ public class Main {
         boolean isHumanPlayer = true;
 
         while(!gr.isGameOver()){
+            // for every new round, swap players
             Player currentPlayer = isHumanPlayer? humanPlayer : computerPlayer;
-            System.out.println("round " + gameCounters.getRoundCounter());
-            System.out.println("which player now? " + currentPlayer);
+            System.out.println("Round " + gameCounters.getRoundCounter());
             TileRack playerRack = isHumanPlayer ? gr.getHumanPlayer().getTileRack() : gr.getComputerPlayer().getTileRack();
 
             if(isHumanPlayer){
@@ -48,23 +48,38 @@ public class Main {
             while (!isMoveVerified) {
                 String playersMove = currentPlayer.move();
                 if (playersMove.equals(PASS)) {
+                    System.out.println("The " + currentPlayer + " passes this round!");
                     gameCounters.incrementPassCounter();
                     break;
                 }
 
                 MoveValidator moveValidator = new MoveValidator(playersMove, gameBoard); // new unverified move created here
-                isMoveVerified = moveValidator.isMovePermitted(playerRack, gameCounters.getRoundCounter() == 1);
-                if (isMoveVerified) {
+                boolean isMoveFormatLegal = moveValidator.isMoveFormatLegal();
+                if(!isMoveFormatLegal) {
+                    GameTextPrinter.printIllegalMoveFormat();
+                    continue;
+                }
+                boolean rackContainsMove = moveValidator.rackContainsMove(playerRack);
+                if(!rackContainsMove) {
+                    GameTextPrinter.printTilesNotInRack(playerRack, playersMove);
+                    continue;
+                }
+                boolean isMovePlayableOnBoard = moveValidator.isMovePlayableOnBoard(gameCounters.getRoundCounter() == 1);
+                if(!isMovePlayableOnBoard && moveValidator.getCurrentMove() != null) {
+                    GameTextPrinter.printWordPermittedAtPosition(moveValidator.getCurrentMove());
+                    continue;
+                }
+
+                if (isMovePlayableOnBoard) {
+                    isMoveVerified = true;
                     Move move = moveValidator.getCurrentMove();
                     System.out.println("The move is:   Word: " + move.getWordMove() + " at position " + move.getSquareMove());
                     FileProcessor.addToWordAlreadyPlayed(move.getWordFormed());
 
-
                     List<Tile> tilesToBeSetOnSquare = move.getTilesToBeSetOnSquare(playerRack);
                     List<Square> squaresToBeOccupied = move.getListOfSquaresToBeOccupied();
                     List<Square> occupiedSquares = move.getListOfOccupiedSquares();
-                    System.out.println(tilesToBeSetOnSquare);
-                    System.out.println(squaresToBeOccupied);
+
                     gr.updateGameBoard(squaresToBeOccupied, tilesToBeSetOnSquare);
 
                     gr.updatePlayerScore(tilesToBeSetOnSquare, squaresToBeOccupied, occupiedSquares, currentPlayer);
