@@ -15,7 +15,6 @@ class GameRunnerTest {
 
     @Test
     void isGameOverWithPassCounter() {
-        TileBag tileBag = mock(TileBag.class);
         GameBoard gameBoard = mock(GameBoard.class);
         Player humanPlayer = mock(Player.class);
         Player computerPlayer = mock(Player.class);
@@ -37,7 +36,6 @@ class GameRunnerTest {
 
     @Test
     void isGameOverWithPassCounterReset() {
-        TileBag tileBag = mock(TileBag.class);
         GameBoard gameBoard = mock(GameBoard.class);
         Player humanPlayer = mock(Player.class);
         Player computerPlayer = mock(Player.class);
