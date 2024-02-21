@@ -10,7 +10,6 @@ public abstract class Player {
      public Player(TileBag tileBag) {
           this.playerScore = 0;
           this.tileRack = new TileRack(tileBag);
-          this.getTileRack().refillUserRack();
      }
 
      public int getPlayerScore() {

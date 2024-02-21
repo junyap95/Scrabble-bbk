@@ -35,30 +35,6 @@ class MoveTest {
     }
 
     @Test
-    void getWordMove() {
-    }
-
-    @Test
-    void getSquareMove() {
-    }
-
-    @Test
-    void getWordMoveList() {
-    }
-
-    @Test
-    void getStartSquareX() {
-    }
-
-    @Test
-    void getStartSquareY() {
-    }
-
-    @Test
-    void getStartSquare() {
-    }
-
-    @Test
     void getWordFormed() {
         GameBoard gameboard = mock(GameBoard.class);
 
@@ -200,12 +176,12 @@ class MoveTest {
 
         List<Square> occupiedSquares = new ArrayList<>();
 
-        Square mockSquare1 = mock(Square.class); // C
+        Square mockSquare1 = mock(Square.class);
         Square mockSquare2 = mock(Square.class);
-        Square mockSquare3 = mock(Square.class);// T
+        Square mockSquare3 = mock(Square.class);
 
-        Tile mockTile1 = mock(Tile.class); // C
-        Tile mockTile3 = mock(Tile.class); // T
+        Tile mockTile1 = mock(Tile.class);
+        Tile mockTile3 = mock(Tile.class);
 
         int x = 0, y = 1;
         when(gameboard.getSquareByIndex(x, y)).thenReturn(mockSquare2);

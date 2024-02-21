@@ -7,11 +7,13 @@ import pij.main.GameRunner.GameRunner;
 import pij.main.GameRunner.GameTextPrinter;
 import pij.main.Move.Move;
 import pij.main.Move.MoveValidator;
+import pij.main.Players.ComputerPlayer;
+import pij.main.Players.HumanPlayer;
 import pij.main.Players.Player;
 import pij.main.Square.Square;
 import pij.main.Tile.Tile;
+import pij.main.Tile.TileBag;
 import pij.main.Tile.TileRack;
-
 import java.util.List;
 
 import static pij.main.Move.Move.PASS;
@@ -19,75 +21,71 @@ import static pij.main.Move.Move.PASS;
 public class Main {
 
     public static void main(String[] args) {
-        GameRunner gr = new GameRunner();
-        Player humanPlayer = gr.getHumanPlayer();
-        Player computerPlayer = gr.getComputerPlayer();
-        GameBoard gameBoard = gr.getGameItems().getGameBoard();
-        GameCounters gameCounters = gr.getGameCounters();
+        TileBag tileBag = TileBag.getTileBag();
+        GameBoard gameBoard = GameBoard.getGameBoard();
+        Player humanPlayer = new HumanPlayer(tileBag);
+        Player computerPlayer = new ComputerPlayer(tileBag, gameBoard);
+        GameCounters gameCounters = new GameCounters();
+        GameRunner gr = new GameRunner(gameBoard, humanPlayer, computerPlayer, gameCounters);
 
+        gr.initNewGame();
         boolean isHumanPlayer = true;
 
-        while(!gr.isGameOver()){
-            // for every new round, swap players
-            Player currentPlayer = isHumanPlayer? humanPlayer : computerPlayer;
-            System.out.println("Round " + gameCounters.getRoundCounter());
-            TileRack playerRack = isHumanPlayer ? gr.getHumanPlayer().getTileRack() : gr.getComputerPlayer().getTileRack();
+        while (!gr.isGameOver()) {
+            System.out.println("ROUND " + gameCounters.getRoundCounter()); // keeps track of how many rounds have been played
+            Player currentPlayer = isHumanPlayer ? humanPlayer : computerPlayer; // for every new round, swap between players
+            TileRack playerRack = currentPlayer.getTileRack();
 
-            if(isHumanPlayer){
-                if (gameCounters.isGameOpen()) {
+            if (isHumanPlayer) {
+                if (gr.isGameOpen()) {
                     GameTextPrinter.printOpenGameMessage();
                     System.out.println("OPEN GAME: " + gr.getComputerPlayer().getTileRack());
                 }
 
                 GameTextPrinter.printItsYourTurn();
                 System.out.println(playerRack);
-            } // tile racks printer
+            } // displays players tile racks
 
             boolean isMoveVerified = false; // every new round, new move will have to be verified
 
             while (!isMoveVerified) {
                 String playersMove = currentPlayer.move();
                 if (playersMove.equals(PASS)) {
-                    System.out.println("The " + currentPlayer + " passes this round!");
+                    System.out.println("The " + currentPlayer + " passes this round!\n");
                     gameCounters.incrementPassCounter();
                     break;
                 }
 
-                MoveValidator moveValidator = new MoveValidator(playersMove, gameBoard); // new unverified move created here
-                boolean isMoveFormatLegal = moveValidator.isMoveFormatLegal();
-                if(!isMoveFormatLegal) {
+                MoveValidator mv = new MoveValidator(playersMove, gameBoard); // new unverified move created here
+                if (mv.isMoveFormatLegal()) {
+                    if (mv.rackContainsMove(playerRack)) {
+                        if (mv.isMovePlayableOnBoard(gameCounters.getRoundCounter() == 1)) {
+                            isMoveVerified = true;
+                            Move move = mv.getCurrentMove();
+                            System.out.println("The " + currentPlayer + " move is:   Word: " + move.getWordMove() + " at position " + move.getSquareMove());
+                            FileProcessor.addToWordAlreadyPlayed(move.getWordFormed());
+
+                            List<Tile> tilesToBeSetOnSquare = move.getTilesToBeSetOnSquare(playerRack);
+                            List<Square> squaresToBeOccupied = move.getListOfSquaresToBeOccupied();
+                            List<Square> occupiedSquares = move.getListOfOccupiedSquares();
+
+                            gr.updateGameBoard(squaresToBeOccupied, tilesToBeSetOnSquare);
+
+                            gr.updatePlayerScore(tilesToBeSetOnSquare, squaresToBeOccupied, occupiedSquares, currentPlayer);
+                            System.out.println("Human player score: " + humanPlayer.getPlayerScore());
+                            System.out.println("Computer player score: " + computerPlayer.getPlayerScore() + "\n");
+
+                            gameCounters.resetPassCounter();
+                            gameBoard.printGameBoard();
+
+                        } else {
+                            GameTextPrinter.printWordPermittedAtPosition(mv.getCurrentMove());
+                        }
+                    } else {
+                        GameTextPrinter.printTilesNotInRack(playerRack, playersMove);
+                    }
+                } else {
                     GameTextPrinter.printIllegalMoveFormat();
-                    continue;
-                }
-                boolean rackContainsMove = moveValidator.rackContainsMove(playerRack);
-                if(!rackContainsMove) {
-                    GameTextPrinter.printTilesNotInRack(playerRack, playersMove);
-                    continue;
-                }
-                boolean isMovePlayableOnBoard = moveValidator.isMovePlayableOnBoard(gameCounters.getRoundCounter() == 1);
-                if(!isMovePlayableOnBoard && moveValidator.getCurrentMove() != null) {
-                    GameTextPrinter.printWordPermittedAtPosition(moveValidator.getCurrentMove());
-                    continue;
-                }
-
-                if (isMovePlayableOnBoard) {
-                    isMoveVerified = true;
-                    Move move = moveValidator.getCurrentMove();
-                    System.out.println("The move is:   Word: " + move.getWordMove() + " at position " + move.getSquareMove());
-                    FileProcessor.addToWordAlreadyPlayed(move.getWordFormed());
-
-                    List<Tile> tilesToBeSetOnSquare = move.getTilesToBeSetOnSquare(playerRack);
-                    List<Square> squaresToBeOccupied = move.getListOfSquaresToBeOccupied();
-                    List<Square> occupiedSquares = move.getListOfOccupiedSquares();
-
-                    gr.updateGameBoard(squaresToBeOccupied, tilesToBeSetOnSquare);
-
-                    gr.updatePlayerScore(tilesToBeSetOnSquare, squaresToBeOccupied, occupiedSquares, currentPlayer);
-                    System.out.println("Human player score: " + humanPlayer.getPlayerScore());
-                    System.out.println("Computer player score: " + computerPlayer.getPlayerScore() + "\n");
-
-                    gameCounters.resetPassCounter();
-                    gameBoard.printGameBoard();
                 }
             }
 
@@ -97,6 +95,7 @@ public class Main {
         }
         GameTextPrinter.printGameOver(humanPlayer, computerPlayer);
     }
+
 
 }
 

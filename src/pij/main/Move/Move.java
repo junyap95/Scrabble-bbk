@@ -56,7 +56,7 @@ public class Move {
     public String getSquareMove() {
         return this.squareMove;
     }
-    
+
     public int getStartSquareX() {
         return startSquareX;
     }
@@ -85,7 +85,7 @@ public class Move {
 
         List<String> wordList = new ArrayList<>(this.wordMoveList); // shallow copy
 
-        while ((!wordList.isEmpty()  ||  startSquare.isSquareOccupied()) && startSquare != null) {
+        while ((!wordList.isEmpty()  || (startSquare != null &&  startSquare.isSquareOccupied())) && startSquare != null ) {
 
             if (startSquare.isSquareOccupied()) {
                 String tileDisplayAsLetter = startSquare.getTileOnSquare().getDisplayAsLetter();
@@ -123,14 +123,15 @@ public class Move {
         List<String> wordList = new ArrayList<>(this.wordMoveList); // shallow copy
 
         while (!wordList.isEmpty() || (startSquare != null && startSquare.isSquareOccupied())) {
-            if (startSquare.isSquareOccupied()) {
+            if (startSquare != null && startSquare.isSquareOccupied()) {
                 listOfAllPlayableSquares.add(startSquare);
             } else {
-                String word = wordList.getFirst();
                 listOfAllPlayableSquares.add(startSquare);
-                wordList.remove(word);
+                wordList.removeFirst();
             }
-            startSquare = this.getMoveDirection().equals(Direction.RIGHTWARD) ? startSquare.getRightNeighbour() : startSquare.getBottomNeighbour();
+            if (startSquare != null) {
+                startSquare = this.getMoveDirection().equals(Direction.RIGHTWARD) ? startSquare.getRightNeighbour() : startSquare.getBottomNeighbour();
+            }
         }
         this.listOfAllPlayableSquares = listOfAllPlayableSquares;
         return listOfAllPlayableSquares;

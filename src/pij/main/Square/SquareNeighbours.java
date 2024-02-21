@@ -51,8 +51,4 @@ public class SquareNeighbours {
     public boolean hasRightOccupiedNeighbour() {
         return this.getRightNeighbour() != null && this.getRightNeighbour().isSquareOccupied();
     }
-
-    public boolean hasNoNeighbour() {
-        return !hasBtmOccupiedNeighbour() && !hasLeftOccupiedNeighbour() && !hasRightOccupiedNeighbour() && !hasTopOccupiedNeighbour();
-    }
 }

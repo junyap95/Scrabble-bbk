@@ -6,40 +6,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GameBoard {
+    private static GameBoard instance = null; // WARNING: not thread safe
     private List<List<Square>> allSquaresOnBoard; // 2D arrayList to store all squares on the game board
     private int gameBoardSize;
 
-    // constructor, initialises a list that stores list of squares
-    public GameBoard() {
+    // Singleton - private constructor to prevent outside instantiation
+    private GameBoard() {
         allSquaresOnBoard = new ArrayList<>();
     }
 
-    public int getGameBoardSize() {
-        return this.gameBoardSize;
-    }
-
-    public List<List<Square>> getAllSquaresOnBoard() {
-        return this.allSquaresOnBoard;
-    }
-
-    public int getCentreSquareIndex() {
-        return this.gameBoardSize % 2 == 0 ? (this.gameBoardSize / 2) - 1 : this.gameBoardSize / 2;
-    }
-
-    public Square getCentreSquare() {
-        return getAllSquaresOnBoard().get(getCentreSquareIndex()).get(getCentreSquareIndex());
-    }
-
-    public Square getSquareByIndex(int x, int y) {
-        return getAllSquaresOnBoard().get(x).get(y);
-    }
-
-    public void setAllSquaresOnBoard(List<List<Square>> sortedTiles) {
-        this.allSquaresOnBoard = sortedTiles;
-    }
-
-    public void setGameBoardSize(int gameBoardSize) {
-        this.gameBoardSize = gameBoardSize;
+    public static GameBoard getGameBoard () {
+        if(instance == null) {
+            instance = new GameBoard();
+        }
+        return instance;
     }
 
     public boolean isGameBoardEmpty() {
@@ -72,6 +52,35 @@ public class GameBoard {
         System.out.println();
         GameTextPrinter.printAlphabetsRow(this.gameBoardSize);
         System.out.println();
+        System.out.println();
 
+    }
+
+    public int getGameBoardSize() {
+        return this.gameBoardSize;
+    }
+
+    public List<List<Square>> getAllSquaresOnBoard() {
+        return this.allSquaresOnBoard;
+    }
+
+    public int getCentreSquareIndex() {
+        return this.gameBoardSize % 2 == 0 ? (this.gameBoardSize / 2) - 1 : this.gameBoardSize / 2;
+    }
+
+    public Square getCentreSquare() {
+        return getAllSquaresOnBoard().get(getCentreSquareIndex()).get(getCentreSquareIndex());
+    }
+
+    public Square getSquareByIndex(int x, int y) {
+        return getAllSquaresOnBoard().get(x).get(y);
+    }
+
+    public void setAllSquaresOnBoard(List<List<Square>> sortedTiles) {
+        this.allSquaresOnBoard = sortedTiles;
+    }
+
+    public void setGameBoardSize(int gameBoardSize) {
+        this.gameBoardSize = gameBoardSize;
     }
 }

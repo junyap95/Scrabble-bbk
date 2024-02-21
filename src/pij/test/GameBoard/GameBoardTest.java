@@ -15,7 +15,7 @@ class GameBoardTest {
 
     @Test
     void getGameBoardSize() {
-        GameBoard gameBoard = new GameBoard();
+        GameBoard gameBoard = GameBoard.getGameBoard();
         int gameBoardSize = 14;
         gameBoard.setGameBoardSize(gameBoardSize);
         assertEquals(gameBoard.getGameBoardSize(), gameBoardSize);
@@ -24,7 +24,7 @@ class GameBoardTest {
 
     @Test
     void getCentreSquareIndex() {
-        GameBoard gameBoard = new GameBoard();
+        GameBoard gameBoard = GameBoard.getGameBoard();
         gameBoard.setGameBoardSize(12);
         assertEquals(5, gameBoard.getCentreSquareIndex());
         gameBoard.setGameBoardSize(13);
@@ -33,7 +33,7 @@ class GameBoardTest {
 
     @Test
     void getSquareByIndex() {
-        GameBoard gameBoard = new GameBoard();
+        GameBoard gameBoard = GameBoard.getGameBoard();
         List<List<Square>> allSquaresOnBoard = new ArrayList<>();
         List<Square> row1 = new ArrayList<>();
         Square mockSquare1 = mock(Square.class);
@@ -51,28 +51,11 @@ class GameBoardTest {
         assertEquals(result, mockSquare2);
     }
 
-    @Test
-    void isGameBoardEmpty() {
-        GameBoard gameBoard = new GameBoard();
-        List<List<Square>> allSquaresOnBoard = new ArrayList<>();
-        List<Square> row1 = new ArrayList<>();
-        Square mockSquare1 = mock(Square.class);
-        Square mockSquare2 = mock(Square.class);
-        Square mockSquare3 = mock(Square.class);
 
-        row1.add(mockSquare1);
-        row1.add(mockSquare2);
-        row1.add(mockSquare3);
-
-        allSquaresOnBoard.add(row1);
-        gameBoard.setAllSquaresOnBoard(allSquaresOnBoard);
-
-        assertTrue(gameBoard.isGameBoardEmpty());
-    }
 
     @Test
     void isGameBoardNotEmpty() {
-        GameBoard gameBoard = new GameBoard();
+        GameBoard gameBoard = GameBoard.getGameBoard();
         List<List<Square>> allSquaresOnBoard = new ArrayList<>();
         List<Square> row1 = new ArrayList<>();
         Square mockSquare1 = mock(Square.class);
@@ -89,5 +72,24 @@ class GameBoardTest {
         gameBoard.setAllSquaresOnBoard(allSquaresOnBoard);
 
         assertFalse(gameBoard.isGameBoardEmpty());
+    }
+
+    @Test
+    void isGameBoardEmpty() {
+        GameBoard gameBoard = GameBoard.getGameBoard();
+        List<List<Square>> allSquaresOnBoard = new ArrayList<>();
+        List<Square> row1 = new ArrayList<>();
+        Square mockSquare1 = mock(Square.class);
+        Square mockSquare2 = mock(Square.class);
+        Square mockSquare3 = mock(Square.class);
+
+        row1.add(mockSquare1);
+        row1.add(mockSquare2);
+        row1.add(mockSquare3);
+
+        allSquaresOnBoard.add(row1);
+        gameBoard.setAllSquaresOnBoard(allSquaresOnBoard);
+
+        assertTrue(gameBoard.isGameBoardEmpty());
     }
 }

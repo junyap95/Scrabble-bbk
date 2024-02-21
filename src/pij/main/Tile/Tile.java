@@ -13,7 +13,7 @@ public class Tile {
 
     public void setDisplayOnBoard(String displayOnBoard) {
         this.displayOnBoard = displayOnBoard;
-        this.displayAsLetter = String.valueOf(displayOnBoard.charAt(0));
+        this.displayAsLetter = displayOnBoard.substring(0,1);;
     }
 
     public String getDisplayOnBoard() {

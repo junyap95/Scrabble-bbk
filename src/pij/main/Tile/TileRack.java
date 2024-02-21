@@ -18,11 +18,22 @@ public class TileRack {
         // obtain all the available tiles and individual amount from the pool
         // when refilling player's racks, the pool will update the amount of tiles
         Map<String, Integer> tileMap = this.tileBag.getTileMap();
+        int tilesLeftInBag = this.tileBag.currentAmountOfTiles();
         // create a set list, with no duplicates (i.e. tile A to Z and wildcard)
         // this is to allow for random tile allocation for every refill action
+
         List<String> setList = new ArrayList<>(tileMap.keySet());
         Random rand = new Random();
         int numOfTilesToBeRefilled = TILE_RACK_CAPACITY - this.playersTiles.size();
+
+        if(tilesLeftInBag <= numOfTilesToBeRefilled && tilesLeftInBag != 0) {
+            numOfTilesToBeRefilled = tilesLeftInBag;
+        }
+
+        if(tilesLeftInBag == 0){
+            System.out.println("No more tiles left in bag! Player's rack is not refilled!");
+            return;
+        }
 
         // the loop will refill 'missing tiles' from the rack of capacity 7
         // e.g. during round 1, playersTiles.size() is 0, so the loop will run (7-0) times

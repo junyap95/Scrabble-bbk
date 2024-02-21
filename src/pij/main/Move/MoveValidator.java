@@ -122,7 +122,6 @@ public class MoveValidator {
             }
 
             if (letterCount != 1) {
-                GameTextPrinter.printIllegalMoveFormat();
                 return false;
             }
         }
@@ -169,7 +168,6 @@ public class MoveValidator {
 
     public boolean isMovePlayableOnBoard(boolean isFirstRound) {
         if (this.currentMove == null || this.currentMove.getWordFormed() == null) {
-            GameTextPrinter.printIllegalMoveFormat();
             return false;
         }
         String wordFormedFromMove = this.currentMove.getWordFormed();
@@ -207,7 +205,7 @@ public class MoveValidator {
     // helper method (for first move of the game) - check if moves contain centre square, and forms a legit word
     private boolean moveContainsCentreSquare(List<Square> moveList, Square centreSquare, boolean isFirstRound) {
         for (Square square : moveList) {
-            if (square == centreSquare) {
+            if (square.equals(centreSquare)) {
                 // after checking centre square just check if word is in word list
                 return FileProcessor.wordListProcessor(currentMove.getWordMove());
             }

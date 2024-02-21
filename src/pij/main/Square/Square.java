@@ -2,6 +2,8 @@ package pij.main.Square;
 
 import pij.main.Tile.Tile;
 
+import java.util.Objects;
+
 public class Square extends SquareNeighbours {
     private SquareType squareType;
     private String squareDisplayOnBoard;
@@ -28,6 +30,7 @@ public class Square extends SquareNeighbours {
     public Tile getTileOnSquare() {
         return tileOnSquare;
     }
+
     public String getSquareCoordinates() {
         return this.coordinates;
     }
@@ -52,5 +55,18 @@ public class Square extends SquareNeighbours {
         }
         return this.squareDisplayOnBoard;
         // return this.squareDisplayOnBoard;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        Square square = (Square) object;
+        return isSquareOccupied == square.isSquareOccupied && squareType == square.squareType && Objects.equals(squareDisplayOnBoard, square.squareDisplayOnBoard) && Objects.equals(coordinates, square.coordinates) && Objects.equals(squareScore, square.squareScore) && Objects.equals(tileOnSquare, square.tileOnSquare);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(squareType, squareDisplayOnBoard, coordinates, squareScore, isSquareOccupied, tileOnSquare);
     }
 }

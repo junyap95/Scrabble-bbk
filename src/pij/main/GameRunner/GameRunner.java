@@ -2,12 +2,11 @@ package pij.main.GameRunner;
 
 import pij.main.FileReader.FileProcessor;
 import pij.main.GameBoard.GameBoard;
-import pij.main.Players.ComputerPlayer;
-import pij.main.Players.HumanPlayer;
 import pij.main.Players.Player;
 import pij.main.Square.Square;
 import pij.main.Square.SquareType;
 import pij.main.Tile.Tile;
+import pij.main.Tile.TileBag;
 import pij.main.Tile.TileRack;
 import java.io.File;
 import java.util.List;
@@ -15,29 +14,50 @@ import java.util.Scanner;
 
 public class GameRunner {
     static Scanner scanner = new Scanner(System.in);
-    private GameItems gameItems;
-    private HumanPlayer humanPlayer;
+    private GameBoard gameBoard;
+    private Player humanPlayer;
     private Player computerPlayer;
     private GameCounters gameCounters;
+    private boolean isGameOpen; // option to display the computer tiles
 
     // constructor - initialises a new game
-    public GameRunner() {
-        this.initNewGame();
+    public GameRunner(GameBoard gameBoard, Player humanPlayer, Player computerPlayer, GameCounters gameCounters) {
+        this.gameBoard = gameBoard;
+        this.humanPlayer = humanPlayer;
+        this.computerPlayer = computerPlayer;
+        this.gameCounters = gameCounters;
     }
 
     // method - initialises game items, counters, players
-    private void initNewGame() {
-        // a welcome banner is printed
+    public void initNewGame() {
         GameTextPrinter.printWelcomeBanner();
-        this.gameItems = new GameItems(); // new gameBoard and new tileBag
-        this.loadResources(getGameItems().getGameBoard()); // reads word list and board txt files
-        this.humanPlayer = new HumanPlayer(this.getGameItems().getTileBag()); // new player and tile rack
-        this.computerPlayer = new ComputerPlayer(this.getGameItems().getTileBag(), this.gameItems.getGameBoard()); // new player and tile rack
-        this.gameCounters = new GameCounters();
+        this.loadAndPrintBoard();
         this.setupTileRacks();
+        this.setOpenOrCloseGame();
     }
 
-    public void loadResources(GameBoard gameBoard) {
+    // helper method - set the game to open/close
+    private void setOpenOrCloseGame() {
+        GameTextPrinter.printOpenOrCloseGameText();
+        String playersChoice = scanner.nextLine().toLowerCase();
+        boolean validChoice = false;
+
+        while (!validChoice) {
+            if (playersChoice.equals("o") || playersChoice.equals("c")) {
+                validChoice = true;
+            } else {
+                System.out.println("Please enter a valid letter: o / c ");
+                playersChoice = scanner.nextLine();
+            }
+        }
+        if (playersChoice.equals("o")) {
+            this.isGameOpen = true;
+            return;
+        }
+        this.isGameOpen = false;
+    }
+
+    private void loadAndPrintBoard() {
         FileProcessor.loadWordList(); // initialises word list into hashset
         GameTextPrinter.printLoadBoard();
         String playersChoice;
@@ -48,13 +68,13 @@ public class GameRunner {
             if (playersChoice.equals("d") || playersChoice.equals("l")) {
                 validChoice = true;
             } else {
-                System.out.println("Please enter a valid letter: d / l ");
+                System.out.println("Please enter a valid letter: l / d ");
                 playersChoice = scanner.nextLine();
             }
         }
 
         if (playersChoice.equals("d")) {
-            FileProcessor.boardProcessor(gameBoard, "defaultBoard.txt");
+            FileProcessor.boardProcessor(this.gameBoard, "defaultBoard.txt");
         } else {
             boolean validFileName = false;
             String loadCustomBoard;
@@ -66,13 +86,13 @@ public class GameRunner {
 
                 if (file.exists() && loadCustomBoard.endsWith(".txt")) {
                     validFileName = true;
-                    FileProcessor.boardProcessor(gameBoard, loadCustomBoard);
+                    FileProcessor.boardProcessor(this.gameBoard, loadCustomBoard);
                 } else {
                     System.out.println("Invalid file name or format. Please try again, or rerun the program.");
                 }
             }
         }
-        gameBoard.printGameBoard(); // initial empty gameBoard
+        this.gameBoard.printGameBoard(); // print initial empty gameBoard
     }
 
     public boolean isGameOver() {
@@ -82,28 +102,25 @@ public class GameRunner {
         return passCounter >= 4 || player1Rack.getPlayersTiles().isEmpty() || player2Rack.getPlayersTiles().isEmpty();
     }
 
+    public boolean isGameOpen() {
+        return isGameOpen;
+    }
+
+    // during game initiation
     private void setupTileRacks() {
         this.getHumanPlayer().getTileRack().refillUserRack();
         this.getComputerPlayer().getTileRack().refillUserRack();
     }
 
-    // create a move list based on current move
-    // get a round counter and the centre square
-    // for round one - check 1. if word list forms a word that overlaps centre square
-    // round 2 onwards - check 1. if word list overlap with any occupied square
-    // 2. check if the word formed is parallel to any existing word on the board. e.g. does the new word 'touch' in the same direction
-
-
     // update the display of the game board
     // update the square status to 'occupied'
-    // TODO: instead of passing move and tileRack, pass in the List needed instead?
     public void updateGameBoard(List<Square> squaresToBeOccupied, List<Tile> tileToBeSetOnSquare) {
         for (int i = 0; i < squaresToBeOccupied.size(); i++) {
             squaresToBeOccupied.get(i).setTileOnSquare(tileToBeSetOnSquare.get(i));
         }
     }
 
-    // helper methods for score calculations and update
+    // helper method - for score calculations
     private int calculateScore(List<Tile> tileToBeSetOnSquare, List<Square> squaresToBeOccupied, List<Square> listOfOccupiedSquares) {
         int result = 0;
         int premiumWordCumulative = 1;
@@ -139,21 +156,22 @@ public class GameRunner {
         return result;
     }
 
+    // helper method - for score update
     public void updatePlayerScore(List<Tile> tileToBeSetOnSquare, List<Square> squaresToBeOccupied, List<Square> occupiedSquares, Player player) {
         int score = this.calculateScore(tileToBeSetOnSquare, squaresToBeOccupied, occupiedSquares);
         player.updateScore(score);
     }
 
     //getters
-    public GameItems getGameItems() {
-        return gameItems;
+    public GameBoard getGameBoard() {
+        return this.gameBoard;
     }
 
     public GameCounters getGameCounters() {
         return gameCounters;
     }
 
-    public HumanPlayer getHumanPlayer() {
+    public Player getHumanPlayer() {
         return humanPlayer;
     }
 
