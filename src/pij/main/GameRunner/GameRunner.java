@@ -6,7 +6,6 @@ import pij.main.Players.Player;
 import pij.main.Square.Square;
 import pij.main.Square.SquareType;
 import pij.main.Tile.Tile;
-import pij.main.Tile.TileBag;
 import pij.main.Tile.TileRack;
 import java.io.File;
 import java.util.List;
@@ -160,11 +159,6 @@ public class GameRunner {
     public void updatePlayerScore(List<Tile> tileToBeSetOnSquare, List<Square> squaresToBeOccupied, List<Square> occupiedSquares, Player player) {
         int score = this.calculateScore(tileToBeSetOnSquare, squaresToBeOccupied, occupiedSquares);
         player.updateScore(score);
-    }
-
-    //getters
-    public GameBoard getGameBoard() {
-        return this.gameBoard;
     }
 
     public GameCounters getGameCounters() {

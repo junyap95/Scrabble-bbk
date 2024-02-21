@@ -2,7 +2,6 @@ package pij.main.Move;
 
 import pij.main.FileReader.FileProcessor;
 import pij.main.GameBoard.GameBoard;
-import pij.main.GameRunner.GameTextPrinter;
 import pij.main.Square.Square;
 import pij.main.Tile.TileRack;
 import java.util.ArrayList;

@@ -4,12 +4,10 @@ import org.junit.jupiter.api.Test;
 import pij.main.Tile.Tile;
 import pij.main.Tile.TileBag;
 import pij.main.Tile.TileRack;
-
 import java.util.ArrayList;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class TileRackTest {
 

@@ -20,7 +20,7 @@ class GameRunnerTest {
         Player humanPlayer = mock(Player.class);
         Player computerPlayer = mock(Player.class);
         GameCounters gameCounters = mock(GameCounters.class);
-        GameRunner gameRunner = new GameRunner(tileBag, gameBoard, humanPlayer, computerPlayer, gameCounters);
+        GameRunner gameRunner = new GameRunner(gameBoard, humanPlayer, computerPlayer, gameCounters);
         GameCounters counter = gameRunner.getGameCounters();
         counter.incrementPassCounter();
         assertFalse(gameRunner.isGameOver());
@@ -42,7 +42,7 @@ class GameRunnerTest {
         Player humanPlayer = mock(Player.class);
         Player computerPlayer = mock(Player.class);
         GameCounters gameCounters = mock(GameCounters.class);
-        GameRunner gameRunner = new GameRunner(tileBag, gameBoard, humanPlayer, computerPlayer, gameCounters);
+        GameRunner gameRunner = new GameRunner(gameBoard, humanPlayer, computerPlayer, gameCounters);
         GameCounters counter = gameRunner.getGameCounters();
         counter.incrementPassCounter();
         assertFalse(gameRunner.isGameOver());
@@ -66,7 +66,7 @@ class GameRunnerTest {
         Player humanPlayer = new HumanPlayer(tileBag);
         Player computerPlayer = new ComputerPlayer(tileBag, gameBoard);
         GameCounters gameCounters = mock(GameCounters.class);
-        GameRunner gameRunner = new GameRunner(tileBag, gameBoard, humanPlayer, computerPlayer, gameCounters);
+        GameRunner gameRunner = new GameRunner(gameBoard, humanPlayer, computerPlayer, gameCounters);
 
         humanPlayer.getTileRack().refillUserRack();
         computerPlayer.getTileRack().refillUserRack();
@@ -81,7 +81,7 @@ class GameRunnerTest {
         Player humanPlayer = new HumanPlayer(tileBag);
         Player computerPlayer = new ComputerPlayer(tileBag, gameBoard);
         GameCounters gameCounters = mock(GameCounters.class);
-        GameRunner gameRunner = new GameRunner(tileBag, gameBoard, humanPlayer, computerPlayer, gameCounters);
+        GameRunner gameRunner = new GameRunner(gameBoard, humanPlayer, computerPlayer, gameCounters);
 
         humanPlayer.getTileRack().refillUserRack();
         computerPlayer.getTileRack().refillUserRack();

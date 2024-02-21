@@ -3,9 +3,7 @@ package pij.test.Tile;
 import org.junit.jupiter.api.Test;
 import pij.main.Tile.TileBag;
 import pij.main.Tile.TileRack;
-
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 
 class TileBagTest {
 

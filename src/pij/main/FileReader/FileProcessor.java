@@ -43,10 +43,7 @@ public class FileProcessor {
             System.out.println(wordPlayed + " is already played once on board!");
             return false;
         }
-
-        if (wordSet.contains(wordPlayed.toLowerCase())) return true;
-//        System.out.println(wordPlayed + " is not a valid word!");
-        return false;
+        return wordSet.contains(wordPlayed.toLowerCase());
     }
 
 

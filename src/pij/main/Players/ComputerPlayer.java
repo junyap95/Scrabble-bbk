@@ -3,13 +3,10 @@ package pij.main.Players;
 import pij.main.FileReader.FileProcessor;
 import pij.main.GameBoard.GameBoard;
 import pij.main.Move.Direction;
-import pij.main.Move.Move;
 import pij.main.Move.MoveValidator;
 import pij.main.Square.Square;
 import pij.main.Tile.Tile;
 import pij.main.Tile.TileBag;
-import pij.main.Tile.TileRack;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,7 +14,6 @@ import java.util.List;
 import static pij.main.Move.Direction.RIGHTWARD;
 import static pij.main.Move.Move.PASS;
 import static pij.main.Move.Move.getSquareMoveByIndex;
-
 
 public class ComputerPlayer extends Player {
     private GameBoard gameBoard;
