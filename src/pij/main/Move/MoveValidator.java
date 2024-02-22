@@ -1,6 +1,6 @@
 package pij.main.Move;
 
-import pij.main.FileReader.FileProcessor;
+import pij.main.FileProcessor.FileProcessor;
 import pij.main.GameBoard.GameBoard;
 import pij.main.Square.Square;
 import pij.main.Tile.TileRack;
@@ -15,25 +15,22 @@ public class MoveValidator {
     String moveString;
     GameBoard gameBoard;
 
-    // CONSTRUCTOR
     public MoveValidator(String moveString, GameBoard gameBoard) {
         this.moveString = moveString;
         this.gameBoard = gameBoard;
-        this.currentMove = this.createMove();
     }
 
-    // constructor helper method - for new Move creation
-    public Move createMove() {
+    // helper method - for new Move creation
+    public void createMove() {
         String move = this.moveString;
-
         // the bare minimum requirement for a string must include one comma
         if (!move.contains(",") || move.contains(" ")) {
-            return null;
+            return;
         }
 
         // if not 2-part splitting, there are >1 comma included
         if (move.split(",").length != 2 && !move.equals(",")) {
-            return null;
+            return;
         }
 
         String wordMove = moveString.split(",")[0];
@@ -63,20 +60,20 @@ public class MoveValidator {
         }
 
         if (hasInvalidChar || !hasLetter || !hasDigit) {
-            return null;
+            return;
         }
         int digit = Integer.parseInt(digitBuilder.toString());
         int xIndex = digit - 1;
         int yIndex = letter -97;
 
         if (xIndex < 0 || xIndex >= this.gameBoard.getGameBoardSize() || yIndex < 0 || yIndex >= this.gameBoard.getGameBoardSize()) {
-            return null;
+            return;
         }
         if(gameBoard.getSquareByIndex(xIndex, yIndex).isSquareOccupied()) {
-            return null;
+            return;
         } // if start square is already occupied
 
-        return new Move(wordMove, squareMove, xIndex, yIndex, this.gameBoard);
+        this.currentMove = new Move(wordMove, squareMove, xIndex, yIndex, this.gameBoard);
     }
 
     public Move getCurrentMove() {
@@ -88,7 +85,6 @@ public class MoveValidator {
         if (this.currentMove == null) {
             return false;
         }
-
         String wordMove = this.currentMove.getWordMove(); // i.e. "HI"
         String squareMove = this.currentMove.getSquareMove(); // i.e. "f4"
 
@@ -101,7 +97,7 @@ public class MoveValidator {
             return false;
         }
 
-        // square move must have small letters only - '8H' not allowe
+        // square move must have small letters only - '8H' not allowed
         for (char ch : squareMove.toCharArray()) {
             if (Character.isUpperCase(ch)) {
                 return false;
@@ -171,33 +167,29 @@ public class MoveValidator {
         }
         String wordFormedFromMove = this.currentMove.getWordFormed();
         List<Square> listOfPlayableSquares = this.currentMove.getListOfAllPlayableSquares();
+        List<Square> listOfSquaresToBeOccupied = this.currentMove.getListOfSquaresToBeOccupied();
+        List<Square> listOfOccupiedSquares = this.currentMove.getListOfOccupiedSquares();
         Direction direction = this.currentMove.getMoveDirection();
         Square centreSquare = this.gameBoard.getCentreSquare(); // needed for first round
 
         // in first round and if the board is still empty due to player passing round
-        if (isFirstRound || this.gameBoard.isGameBoardEmpty())
-            return this.moveContainsCentreSquare(listOfPlayableSquares, centreSquare, isFirstRound);
+        if (isFirstRound || this.gameBoard.isGameBoardEmpty()) return this.moveContainsCentreSquare(listOfPlayableSquares, centreSquare, isFirstRound);
 
-        boolean hasOverLap = false;
-        for (Square sq : listOfPlayableSquares) {
-            if (sq.isSquareOccupied()) {
-                hasOverLap = true;
-            }
+        boolean hasOverLap = !listOfOccupiedSquares.isEmpty();
 
+        for (Square sq : listOfSquaresToBeOccupied) {
             if(direction.equals(Direction.RIGHTWARD)) {
-                if (!sq.isSquareOccupied() && (sq.hasTopOccupiedNeighbour() || sq.hasBtmOccupiedNeighbour())) {
+                if (sq.hasTopOccupiedNeighbour() || sq.hasBtmOccupiedNeighbour()) {
                     return false;
                 }
             }
 
             if(direction.equals(Direction.DOWNWARD)) {
-                if (!sq.isSquareOccupied() && (sq.hasLeftOccupiedNeighbour() || sq.hasRightOccupiedNeighbour())) {
+                if (sq.hasLeftOccupiedNeighbour() || sq.hasRightOccupiedNeighbour()) {
                     return false;
                 }
             }
-
         }
-
         return hasOverLap && FileProcessor.wordListProcessor(wordFormedFromMove);
     }
 

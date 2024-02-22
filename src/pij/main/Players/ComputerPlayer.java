@@ -1,6 +1,6 @@
 package pij.main.Players;
 
-import pij.main.FileReader.FileProcessor;
+import pij.main.FileProcessor.FileProcessor;
 import pij.main.GameBoard.GameBoard;
 import pij.main.Move.Direction;
 import pij.main.Move.MoveValidator;
@@ -10,7 +10,6 @@ import pij.main.Tile.TileBag;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import static pij.main.Move.Direction.RIGHTWARD;
 import static pij.main.Move.Move.PASS;
 import static pij.main.Move.Move.getSquareMoveByIndex;
@@ -43,7 +42,6 @@ public class ComputerPlayer extends Player {
 
                 // find start square first, must be unoccupied
                 // if occupied, skips through this if-condition and j++
-                // Get directions to test
                 if (!startSquare.isSquareOccupied()) {
 
                     List<Direction> directionToTest = getDirectionToTest(startSquare);
@@ -57,6 +55,7 @@ public class ComputerPlayer extends Player {
                         // Get/capture all letters to the left/top of the start square, if any
                         Square leftOrTopNeighbour = dir.equals(RIGHTWARD) ? startSquare.getLeftNeighbour() : startSquare.getTopNeighbour();
                         while (leftOrTopNeighbour != null && leftOrTopNeighbour.isSquareOccupied()) {
+                            isThisSquarePlayable = true; // in case the current move did not have any occupied square after this one, it will still be playable considering this one as an overlap
                             playableSquares.add(leftOrTopNeighbour); // captured an occupied square adjacent to our start square
                             leftOrTopNeighbour = dir.equals(RIGHTWARD) ? leftOrTopNeighbour.getLeftNeighbour() : leftOrTopNeighbour.getTopNeighbour(); // keep going till unoccupied square or null
                         }
@@ -99,14 +98,10 @@ public class ComputerPlayer extends Player {
                             String availableLetters = getAvailableLetters(playableSquares, this.getTileRack().getPlayersTiles()); // all occupied squares and players tiles letters, might contain "_"
 
                             List<String> possibleWords = FileProcessor.possibleWordsGenerator(availableLetters).reversed();
-
                             String occupiedSquaresLetters = extractOccupiedSquaresLetters(playableSquares);
 
                             // for each possible word
                             for (String word : possibleWords) {
-
-                                // form a move, WILL not always be playable, how to know?
-                                // we are still in the for loops, i, j -> x and y for start square
 
                                 String move;
                                 List<String> wordAsArray = new ArrayList<>(Arrays.asList(word.toUpperCase().split(""))); // [ D, O, G ]
@@ -115,19 +110,18 @@ public class ComputerPlayer extends Player {
                                     wordAsArray.remove(String.valueOf(letterOnBoard)); // clean up
                                 }
 
-
                                 String wordToPlay = String.join("", wordAsArray);
 
-                                if(availableLetters.contains("_") && !wordToPlay.isEmpty()) {
-                                    String replacement = wordToPlay.substring(0,1).toLowerCase();
-                                    wordToPlay = wordToPlay.replaceFirst(wordToPlay.substring(0,1), replacement);
+                                if (availableLetters.contains("_") && !wordToPlay.isEmpty()) {
+                                    String replacement = wordToPlay.substring(0, 1).toLowerCase();
+                                    wordToPlay = wordToPlay.replaceFirst(wordToPlay.substring(0, 1), replacement);
                                 }
+
                                 move = wordToPlay + "," + getSquareMoveByIndex(i, j, dir);
 
                                 MoveValidator moveValidator = new MoveValidator(move, gameBoard); // new unverified move created here
+                                moveValidator.createMove();
                                 boolean isMoveVerified = moveValidator.isMovePermitted(this.getTileRack(), false);
-
-                                System.out.println("Move " + move);
                                 if (isMoveVerified) return move;
 
                             }
@@ -137,7 +131,7 @@ public class ComputerPlayer extends Player {
             } // end of j loop
         } // end of i loop
         return PASS;
-    } // end of method
+    }
 
     private static List<Direction> getDirectionToTest(Square startSquare) {
         List<Direction> directionToTest = new ArrayList<>(Arrays.asList(Direction.DOWNWARD, RIGHTWARD));
@@ -163,6 +157,7 @@ public class ComputerPlayer extends Player {
             availableLetters.append(t.getDisplayAsLetter());
         }
         String possibleWords = FileProcessor.possibleWordsGenerator(availableLetters.toString()).getLast().toUpperCase();
+        if(possibleWords.isEmpty()) return PASS;
 
         for (char ch : possibleWords.toCharArray()) {
             // if that word has character, but player does not have it available

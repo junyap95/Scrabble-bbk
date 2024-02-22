@@ -1,6 +1,6 @@
 package pij.main;
 
-import pij.main.FileReader.FileProcessor;
+import pij.main.FileProcessor.FileProcessor;
 import pij.main.GameBoard.GameBoard;
 import pij.main.GameRunner.GameCounters;
 import pij.main.GameRunner.GameRunner;
@@ -23,13 +23,13 @@ public class Main {
     public static void main(String[] args) {
         TileBag tileBag = TileBag.getTileBag();
         GameBoard gameBoard = GameBoard.getGameBoard();
-        Player humanPlayer = new HumanPlayer(tileBag);
+        Player humanPlayer = new HumanPlayer(tileBag); // this can be changed to a computer player and 2 computer players can play among themselves
         Player computerPlayer = new ComputerPlayer(tileBag, gameBoard);
         GameCounters gameCounters = new GameCounters();
         GameRunner gr = new GameRunner(gameBoard, humanPlayer, computerPlayer, gameCounters);
 
         gr.initNewGame();
-        boolean isHumanPlayer = true;
+        boolean isHumanPlayer = true; // used for swapping players at each round
 
         while (!gr.isGameOver()) {
             System.out.println("ROUND " + gameCounters.getRoundCounter()); // keeps track of how many rounds have been played
@@ -38,11 +38,10 @@ public class Main {
 
             if (isHumanPlayer) {
                 if (gr.isGameOpen()) {
-                    GameTextPrinter.printOpenGameMessage();
+                    System.out.println("OPEN GAME: The computer's tiles:");
                     System.out.println("OPEN GAME: " + gr.getComputerPlayer().getTileRack());
                 }
-
-                GameTextPrinter.printItsYourTurn();
+                System.out.println("It's your turn! Your tiles:");
                 System.out.println(playerRack);
             } // displays players tile racks
 
@@ -57,6 +56,9 @@ public class Main {
                 }
 
                 MoveValidator mv = new MoveValidator(playersMove, gameBoard); // new unverified move created here
+                mv.createMove();
+
+                // 3 conditional checks before a move is verified to be played on the board
                 if (mv.isMoveFormatLegal()) {
                     if (mv.rackContainsMove(playerRack)) {
                         if (mv.isMovePlayableOnBoard(gameCounters.getRoundCounter() == 1)) {
@@ -70,8 +72,8 @@ public class Main {
                             List<Square> occupiedSquares = move.getListOfOccupiedSquares();
 
                             gr.updateGameBoard(squaresToBeOccupied, tilesToBeSetOnSquare);
-
                             gr.updatePlayerScore(tilesToBeSetOnSquare, squaresToBeOccupied, occupiedSquares, currentPlayer);
+
                             System.out.println("Human player score: " + humanPlayer.getPlayerScore());
                             System.out.println("Computer player score: " + computerPlayer.getPlayerScore() + "\n");
 
@@ -88,10 +90,9 @@ public class Main {
                     GameTextPrinter.printIllegalMoveFormat();
                 }
             }
-
-            currentPlayer.getTileRack().refillUserRack();
+            currentPlayer.getTileRack().refillPlayerRack(); // refill current player's tile rack at the end of the round
             gameCounters.incrementRoundCounter();
-            isHumanPlayer = !isHumanPlayer;
+            isHumanPlayer = !isHumanPlayer; // swap the player
         }
         GameTextPrinter.printGameOver(humanPlayer, computerPlayer);
     }

@@ -1,14 +1,13 @@
 package pij.main.Square;
 
 import pij.main.Tile.Tile;
-
 import java.util.Objects;
 
 public class Square extends SquareNeighbours {
-    private SquareType squareType;
-    private String squareDisplayOnBoard;
+    private final SquareType squareType;
+    private final String squareDisplayOnBoard;
     private String coordinates;
-    private Integer squareScore;
+    private final Integer squareScore;
     private boolean isSquareOccupied;
     private Tile tileOnSquare;
 
@@ -48,15 +47,17 @@ public class Square extends SquareNeighbours {
         this.isSquareOccupied = true;
     }
 
+    // when a square is occupied by a tile, display the tile instead
+    @Override
     public String toString() {
         if (this.isSquareOccupied) {
             String tileDisplay = this.tileOnSquare.getDisplayOnBoard();
             return tileDisplay.length() > 2 ? tileDisplay : tileDisplay + " ";
         }
         return this.squareDisplayOnBoard;
-        // return this.squareDisplayOnBoard;
     }
 
+    // to compare two squares - e.g. in the first round when centre square is required
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;

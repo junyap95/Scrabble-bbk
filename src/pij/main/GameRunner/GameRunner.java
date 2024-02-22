@@ -1,6 +1,6 @@
 package pij.main.GameRunner;
 
-import pij.main.FileReader.FileProcessor;
+import pij.main.FileProcessor.FileProcessor;
 import pij.main.GameBoard.GameBoard;
 import pij.main.Players.Player;
 import pij.main.Square.Square;
@@ -19,7 +19,6 @@ public class GameRunner {
     private GameCounters gameCounters;
     private boolean isGameOpen; // option to display the computer tiles
 
-    // constructor - initialises a new game
     public GameRunner(GameBoard gameBoard, Player humanPlayer, Player computerPlayer, GameCounters gameCounters) {
         this.gameBoard = gameBoard;
         this.humanPlayer = humanPlayer;
@@ -27,9 +26,10 @@ public class GameRunner {
         this.gameCounters = gameCounters;
     }
 
-    // method - initialises game items, counters, players
+    // method - initialises board, refill players' racks, decide open/close game
     public void initNewGame() {
         GameTextPrinter.printWelcomeBanner();
+        FileProcessor.loadWordList(); // initialises word list into hashset
         this.loadAndPrintBoard();
         this.setupTileRacks();
         this.setOpenOrCloseGame();
@@ -56,8 +56,8 @@ public class GameRunner {
         this.isGameOpen = false;
     }
 
+    // helper method - player decide to load or use default game board
     private void loadAndPrintBoard() {
-        FileProcessor.loadWordList(); // initialises word list into hashset
         GameTextPrinter.printLoadBoard();
         String playersChoice;
         playersChoice = scanner.nextLine();
@@ -105,10 +105,10 @@ public class GameRunner {
         return isGameOpen;
     }
 
-    // during game initiation
+    // during game initiation - fill up both players' racks
     private void setupTileRacks() {
-        this.getHumanPlayer().getTileRack().refillUserRack();
-        this.getComputerPlayer().getTileRack().refillUserRack();
+        this.getHumanPlayer().getTileRack().refillPlayerRack();
+        this.getComputerPlayer().getTileRack().refillPlayerRack();
     }
 
     // update the display of the game board

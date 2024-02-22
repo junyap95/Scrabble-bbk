@@ -1,7 +1,6 @@
-package pij.main.FileReader;
+package pij.main.FileProcessor;
 
 import pij.main.GameBoard.GameBoard;
-
 import java.io.*;
 import java.util.*;
 
@@ -46,7 +45,6 @@ public class FileProcessor {
         return wordSet.contains(wordPlayed.toLowerCase());
     }
 
-
     public static List<String> possibleWordsGenerator(String string) {
         // generate map from player tiles and occupied squares' letters
         Map<Character, Integer> playersLetters = lettersToMap(string.toLowerCase());
@@ -54,7 +52,6 @@ public class FileProcessor {
         // if any, find the number of wildcard
         int wildCardCount = 0;
         if(playersLetters.containsKey('_')) wildCardCount = playersLetters.get('_');
-
 
         List<String> possibleWords = new ArrayList<>();
         for (String s : wordSet) {
@@ -83,7 +80,6 @@ public class FileProcessor {
                     if(currentWordCharCount - lettersCharCount > 0) {
                         wildCardNeeded += currentWordCharCount - lettersCharCount;
                     }
-
                 }
             }
 
@@ -179,7 +175,6 @@ public class FileProcessor {
 
     // helper method - for when the 2D array is established
     private static void createSquareNeighbours(List<List<Square>> allSquaresOnBoard) {
-
         // add square neighbours relationship
         for (int i = 0; i < allSquaresOnBoard.size(); i++) {
             for (int j = 0; j < allSquaresOnBoard.get(i).size(); j++) {

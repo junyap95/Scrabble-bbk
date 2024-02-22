@@ -4,6 +4,9 @@ import pij.main.Move.Move;
 import pij.main.Players.Player;
 import pij.main.Tile.TileRack;
 
+/**
+ * This class is solely for printing longer texts
+ */
 public class GameTextPrinter {
 
     public static void printWelcomeBanner() {
@@ -34,16 +37,6 @@ public class GameTextPrinter {
 
     public static void printOpenOrCloseGameText() {
         System.out.println("Would you like to play an _o_pen or a _c_losed game?" + "\n" + "Please enter your choice (o/c): ");
-    }
-
-    public static void printOpenGameMessage() {
-        String openGame = "OPEN GAME: The computer's tiles:";
-        System.out.println(openGame);
-        //        String closeGame = "CLOSED GAME: The computer's tiles are not shown";
-    }
-
-    public static void printItsYourTurn() {
-        System.out.println("It's your turn! Your tiles:");
     }
 
     public static void printIllegalMoveFormat() {

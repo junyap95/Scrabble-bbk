@@ -14,7 +14,7 @@ public class TileRack {
         this.tileBag = tileBag;
     }
 
-    public void refillUserRack() {
+    public void refillPlayerRack() {
         // obtain all the available tiles and individual amount from the pool
         // when refilling player's racks, the pool will update the amount of tiles
         Map<String, Integer> tileMap = this.tileBag.getTileMap();
