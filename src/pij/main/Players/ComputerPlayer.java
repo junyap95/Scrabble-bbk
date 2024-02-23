@@ -14,6 +14,10 @@ import static pij.main.Move.Direction.RIGHTWARD;
 import static pij.main.Move.Move.PASS;
 import static pij.main.Move.Move.getSquareMoveByIndex;
 
+/**
+ * This class mimics a human player, and has its own word generating method
+ * inherits superclass Player
+ */
 public class ComputerPlayer extends Player {
     private GameBoard gameBoard;
 

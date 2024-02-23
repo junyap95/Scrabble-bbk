@@ -7,7 +7,10 @@ import pij.main.Tile.TileRack;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * This class creates a player move
+ * and provides all the methods for validation
+ */
 public class MoveValidator {
     private final int LONGEST_PERMITTED_WORD_STRING = 7;
     private final int LONGEST_PERMITTED_SQUARE_STRING = 3;
@@ -36,6 +39,7 @@ public class MoveValidator {
         String wordMove = moveString.split(",")[0];
         String squareMove = moveString.split(",")[1];
 
+        // below is to find the x and y index for a move
         char letter = '_'; // '_' is a dummy to be replaced
         StringBuilder digitBuilder = new StringBuilder();
         boolean hasDigit = false;
@@ -171,6 +175,9 @@ public class MoveValidator {
         List<Square> listOfOccupiedSquares = this.currentMove.getListOfOccupiedSquares();
         Direction direction = this.currentMove.getMoveDirection();
         Square centreSquare = this.gameBoard.getCentreSquare(); // needed for first round
+
+        String wordMove = this.currentMove.getWordMove();
+        if(wordMove.length() > listOfSquaresToBeOccupied.size()) return false;
 
         // in first round and if the board is still empty due to player passing round
         if (isFirstRound || this.gameBoard.isGameBoardEmpty()) return this.moveContainsCentreSquare(listOfPlayableSquares, centreSquare, isFirstRound);

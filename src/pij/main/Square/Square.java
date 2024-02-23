@@ -3,6 +3,11 @@ package pij.main.Square;
 import pij.main.Tile.Tile;
 import java.util.Objects;
 
+/**
+ * This class contains all the information of a Square
+ * and inherits SquareNeighbour class for a Square's neighbour information on the board
+ * has methods to help board display and move validation
+ */
 public class Square extends SquareNeighbours {
     private final SquareType squareType;
     private final String squareDisplayOnBoard;

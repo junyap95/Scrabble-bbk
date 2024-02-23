@@ -1,5 +1,9 @@
 package pij.main.Tile;
 
+/**
+ * This class contains information of a tile to be played on board
+ * methods are important for board display and score calculation
+ */
 public class Tile {
     private final int tileScore;
     private String displayOnBoard;

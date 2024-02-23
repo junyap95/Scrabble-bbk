@@ -11,6 +11,12 @@ import java.io.File;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * This class initialises a new game
+ * sets up required class instances for the game
+ * determines if the game should end
+ * processes scores and game board based on moves
+ */
 public class GameRunner {
     static Scanner scanner = new Scanner(System.in);
     private GameBoard gameBoard;

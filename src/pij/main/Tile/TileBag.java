@@ -1,8 +1,12 @@
 package pij.main.Tile;
 
-import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * This class provides all the tiles for the players
+ * helps in refilling the players' tile racks every round
+ * and keeps count on the tiles left by having a map of available tiles
+ */
 public class TileBag {
     private Map<String, Integer> tileMap = null;
     private static TileBag instance; // WARNING: not thread safe

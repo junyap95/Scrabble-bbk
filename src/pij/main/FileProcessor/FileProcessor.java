@@ -3,34 +3,23 @@ package pij.main.FileProcessor;
 import pij.main.GameBoard.GameBoard;
 import java.io.*;
 import java.util.*;
-
 import pij.main.Square.*;
 
 public class FileProcessor {
     private static Set<String> wordSet = new HashSet<>();
     private static List<String> wordAlreadyPlayed = new ArrayList<>();
 
-    // helper function to create display string for a square
-    private static String squareToDisplay(String line, int index) {
-        return String.valueOf(line.charAt(index)) + line.charAt(index + 1) + line.charAt(index + 2);
-    }
-
-    // helper function to obtain score for a square
-    private static int squareScore(String line, int index) {
-        String subStr = Character.isDigit(line.charAt(index + 2)) ? line.substring(index + 1, index + 3) : line.substring(index + 1, index + 2);
-
-        return Integer.parseInt(subStr);
-    }
-
+    // method - to prevent player to play a word that is already played on the board
     public static void addToWordAlreadyPlayed(String word) {
         wordAlreadyPlayed.add(word);
     }
 
+    // method - processes all the word from provided wordlist into a HashSet at game initialisation
     public static void loadWordList() {
         try (BufferedReader reader = new BufferedReader(new FileReader("resources/wordlist.txt"))) {
             String currentWord;
             while ((currentWord = reader.readLine()) != null) {
-                wordSet.add(currentWord); // Store words in lowercase for case-insensitive comparison
+                wordSet.add(currentWord);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -49,41 +38,22 @@ public class FileProcessor {
         // generate map from player tiles and occupied squares' letters
         Map<Character, Integer> playersLetters = lettersToMap(string.toLowerCase());
 
-        // if any, find the number of wildcard
-        int wildCardCount = 0;
-        if(playersLetters.containsKey('_')) wildCardCount = playersLetters.get('_');
-
         List<String> possibleWords = new ArrayList<>();
         for (String s : wordSet) {
             Map<Character, Integer> wordFromSet = lettersToMap(s);
             boolean canGenerateWord = true;
-            int wildCardNeeded = 0;
 
             for (Character character : wordFromSet.keySet()) {
-                int currentWordCharCount = wordFromSet.get(character); // A
+                int currentWordCharCount = wordFromSet.get(character);
                 int lettersCharCount = playersLetters.containsKey(character) ? playersLetters.get(character) : 0;
 
-                if(wildCardCount == 0) { // run normal check
                     if (currentWordCharCount > lettersCharCount) {
                         canGenerateWord = false;
                         break;
                     }
-                }
-
-                if(wildCardCount > 0) { // if there is wildcard
-                    // base case, there is never more than 2 wildcards in the game
-                    if(currentWordCharCount - lettersCharCount > 2) {
-                        canGenerateWord = false;
-                        break;
-                    }
-
-                    if(currentWordCharCount - lettersCharCount > 0) {
-                        wildCardNeeded += currentWordCharCount - lettersCharCount;
-                    }
-                }
             }
 
-            if (canGenerateWord && wildCardNeeded <= wildCardCount) {
+            if (canGenerateWord) {
                 possibleWords.add(s.toUpperCase());
             }
         }
@@ -122,12 +92,11 @@ public class FileProcessor {
             int boardSize = Integer.parseInt(reader.readLine());
             // verifies if txt file matches the allowed board size
             if(boardSizeValidator(boardSize)) {
+                // set the allowed board size to the game board
                 gameBoard.setGameBoardSize(boardSize);
             } else {
-                System.out.println("Invalid board size, game exiting...");
-                System.exit(-1);
+                throw new RuntimeException("Invalid board size");
             }
-            // set the allowed board size to the game board instance
 
             // analyses the txt file line-by-line, then allocates appropriate squares to the game board in a 2D-array
             String line;
@@ -164,6 +133,18 @@ public class FileProcessor {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+    }
+
+    // helper function - to create display string for a square
+    private static String squareToDisplay(String line, int index) {
+        return String.valueOf(line.charAt(index)) + line.charAt(index + 1) + line.charAt(index + 2);
+    }
+
+    // helper function - to obtain score for a square
+    private static int squareScore(String line, int index) {
+        String subStr = Character.isDigit(line.charAt(index + 2)) ? line.substring(index + 1, index + 3) : line.substring(index + 1, index + 2);
+
+        return Integer.parseInt(subStr);
     }
 
     // helper method - generates a square's coordinates (e.g. "f4")

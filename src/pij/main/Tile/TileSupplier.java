@@ -3,6 +3,10 @@ package pij.main.Tile;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * This class supplies a map of available tiles for the tile bag
+ * Decoupled from the tile bag for brevity and ease of testing
+ */
 public class TileSupplier {
     public static Map<String, Integer> getTileSupply () {
         Map<String, Integer> tileSupply = new HashMap<>();

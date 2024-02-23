@@ -5,6 +5,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+/**
+ * This class contains all the tiles held by each player
+ * refill method can randomly pick tiles from the tile bag
+ * and other methods to help move validation and testing
+ */
 public class TileRack {
     public final int TILE_RACK_CAPACITY = 7;
     private List<Tile> playersTiles = new ArrayList<>();

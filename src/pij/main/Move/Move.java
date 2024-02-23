@@ -9,8 +9,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * This class stores all the information of a particular move a player made
+ * provides methods to help score calculation, game board updating and word validation
+ */
 public class Move {
-
     Direction moveDirection;
     String wordMove; // "DOG"
     String squareMove; // "a1"
@@ -120,7 +123,7 @@ public class Move {
 
         List<String> wordList = new ArrayList<>(this.wordMoveList); // shallow copy
 
-        while ((!wordList.isEmpty()  || (startSquare != null &&  startSquare.isSquareOccupied())) && startSquare != null) {
+        while (startSquare != null && (!wordList.isEmpty()  || startSquare.isSquareOccupied())) {
             if (startSquare.isSquareOccupied()) {
                 listOfAllPlayableSquares.add(startSquare);
             } else {
@@ -128,7 +131,7 @@ public class Move {
                 wordList.removeFirst();
             }
 
-                startSquare = this.getMoveDirection().equals(Direction.RIGHTWARD) ? startSquare.getRightNeighbour() : startSquare.getBottomNeighbour();
+            startSquare = this.getMoveDirection().equals(Direction.RIGHTWARD) ? startSquare.getRightNeighbour() : startSquare.getBottomNeighbour();
 
         }
         this.listOfAllPlayableSquares = listOfAllPlayableSquares;

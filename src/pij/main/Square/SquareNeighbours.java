@@ -1,5 +1,9 @@
 package pij.main.Square;
 
+/**
+ * This class holds information for a square's neighbouring squares information
+ * important for move validation
+ */
 public class SquareNeighbours {
     private Square topNeighbour;
     private Square bottomNeighbour;
