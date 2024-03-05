@@ -729,3 +729,4 @@ We aim to determine your mark according to the following rubric:
 # Credits
 
 The file `resources/wordlist.txt` is a slightly abridged version of the SOWPODS word list that is available for download [here](https://www.wordgamedictionary.com/sowpods/).
+# Scrabble-BBK
