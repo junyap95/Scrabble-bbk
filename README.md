@@ -2,7 +2,7 @@
 
 ## Overview
 
-This game takes inspiration from the board game Scrabble, although it has certain differences with the standard [Scrabble game](https://en.wikipedia.org/wiki/Scrabble). To reduce your workload, *SkraBBKle* has some simplification over Scrabble, but also some generalisations.  The game will be played between a **Human player** and a **Computer player**.  However, the board size will be `S x S`, where `S` is an integer number between `11` and `26`, instead of the usual `15 x 15`. (We only set the limit `26`  to avoid visualisation/printing problems for large boards.)
+This game takes inspiration from the board game Scrabble, although it has certain differences with the standard [Scrabble game](https://en.wikipedia.org/wiki/Scrabble). *SkraBBKle* has some simplification over Scrabble, but also some generalisations.  The game will be played between a **Human player** and a **Computer player**.  However, the board size will be `S x S`, where `S` is an integer number between `11` and `26`, instead of the usual `15 x 15`. (We only set the limit `26`  to avoid visualisation/printing problems for large boards.)
 
 The rules of SkraBBKle have been inspired by the ones available [here](https://www.hasbro.com/common/instruct/Scrabble_\(2003\).pdf) for the Scrabble game.
 
